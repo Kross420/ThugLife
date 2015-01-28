@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace ThugLife
-{//truggger
+{
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -24,7 +24,7 @@ namespace ThugLife
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
+        ///lel
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
