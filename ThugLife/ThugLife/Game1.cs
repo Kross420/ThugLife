@@ -362,8 +362,16 @@ namespace ThugLife
 
                     if (rectangleCar.Intersects(rectanglePolice))
                     {
-                        if (police[i].Position.Y >= cars[j].Position.Y) police[i].Position.Y += 2;
-                        else police[i].Position.Y -= 2;
+                        if (police[i].Position.Y >= cars[j].Position.Y)
+                        {
+                            police[i].Position.Y += 2;
+                            cars[j].Position.Y -= 1;
+                        }
+                        else
+                        {
+                            police[i].Position.Y -= 2;
+                            cars[j].Position.Y += 1;
+                        } 
                     }
                 }
 
