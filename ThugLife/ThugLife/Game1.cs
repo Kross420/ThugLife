@@ -44,11 +44,20 @@ namespace ThugLife
         Texture2D policeTexture;
         List<Police> police;
 
-        // The rate at which the enemies appear
+        // Cars
+        Texture2D carTexture;
+        Texture2D carTexture2;
+        List<Car> cars;
+
+        // The rate at which the police appear
         TimeSpan policeSpawnTime;
         TimeSpan policePreviousSpawnTime;
         // A random number generator
         Random random;
+
+        // The rate at which the cars appear
+        TimeSpan carsSpawnTime;
+        TimeSpan carsPreviousSpawnTime;
 
 
         
@@ -75,7 +84,7 @@ namespace ThugLife
             road = new ParallaxingBackground();
             barrier = new ParallaxingBackground();
 
-            // Initialize the enemies list
+            // Initialize the police list
             police = new List<Police>();
 
             // Set the time keepers to zero
@@ -86,6 +95,15 @@ namespace ThugLife
 
             // Initialize our random number generator
             random = new Random();
+
+            // Initialize the enemies list
+            cars = new List<Car>();
+
+            // Set the time keepers to zero
+            carsPreviousSpawnTime = TimeSpan.Zero;
+
+            // Used to determine how fast enemy respawns
+            carsSpawnTime = TimeSpan.FromSeconds(8.0f);
 
             base.Initialize();
         }
@@ -115,6 +133,10 @@ namespace ThugLife
 
             //Police
             policeTexture = Content.Load<Texture2D>("popo");
+
+            //Cars
+            carTexture = Content.Load<Texture2D>("car1");
+            carTexture2 = Content.Load<Texture2D>("car2");
 
         }
 
@@ -151,6 +173,9 @@ namespace ThugLife
 
             //Update police
             UpdatePolice(gameTime);
+
+            //Update cars
+            UpdateCars(gameTime);
 
             base.Update(gameTime);
         }
@@ -234,6 +259,57 @@ namespace ThugLife
             }
         }
 
+        // Update police
+        private void AddCars()
+        {
+            // Create the animation object
+            Animation carsAnimation = new Animation();
+            Animation carsAnimation2 = new Animation();
+
+            // Initialize the animation with the correct animation information
+            carsAnimation.Initialize(carTexture, Vector2.Zero, 297, 103, 3, 30, Color.White, 1f, true);
+            carsAnimation2.Initialize(carTexture2, Vector2.Zero, 341, 119, 3, 30, Color.White, 1f, true);
+
+            // Randomly generate the position of the enemy
+            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width + carTexture.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
+            //Vector2 position2 = new Vector2(-carTexture2.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
+
+            // Create an enemy
+            Car car = new Car();
+
+            // Initialize the enemy
+            int sk = random.Next(1, 3);
+            if (sk == 1) car.Initialize(carsAnimation, position);
+            else car.Initialize(carsAnimation2, position);
+            
+
+            // Add the enemy to the active enemies list
+            cars.Add(car);
+        }
+
+        private void UpdateCars(GameTime gameTime)
+        {
+            // Spawn a new enemy enemy every 1.5 seconds
+            if (gameTime.TotalGameTime - carsPreviousSpawnTime > carsSpawnTime)
+            {
+                carsPreviousSpawnTime = gameTime.TotalGameTime;
+
+                // Add a Car
+                AddCars();
+            }
+
+            // Update the Enemies
+            for (int i = cars.Count - 1; i >= 0; i--)
+            {
+                cars[i].Update(gameTime);
+
+                if (cars[i].Active == false)
+                {
+                    cars.RemoveAt(i);
+                }
+            }
+        }
+
         //
         protected override void Draw(GameTime gameTime)
         {
@@ -256,6 +332,12 @@ namespace ThugLife
             for (int i = 0; i < police.Count; i++)
             {
                 police[i].Draw(spriteBatch);
+
+            }
+
+            for (int i = 0; i < cars.Count; i++)
+            {
+                cars[i].Draw(spriteBatch);
 
             }
             barrier.Draw(spriteBatch);

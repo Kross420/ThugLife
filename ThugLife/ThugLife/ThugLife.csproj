@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
+    <Compile Include="Car.cs" />
     <Compile Include="ParallaxingBackground.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Police.cs" />
