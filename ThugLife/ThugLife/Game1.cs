@@ -82,7 +82,7 @@ namespace ThugLife
             policePreviousSpawnTime = TimeSpan.Zero;
 
             // Used to determine how fast enemy respawns
-            policeSpawnTime = TimeSpan.FromSeconds(1.0f);
+            policeSpawnTime = TimeSpan.FromSeconds(5.0f);
 
             // Initialize our random number generator
             random = new Random();
