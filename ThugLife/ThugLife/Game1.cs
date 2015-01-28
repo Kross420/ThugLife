@@ -22,6 +22,9 @@ namespace ThugLife
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.IsFullScreen = false;
+            graphics.PreferredBackBufferHeight = 340;
+            graphics.PreferredBackBufferWidth = 480;
             Content.RootDirectory = "Content";
         }
 
@@ -30,8 +33,9 @@ namespace ThugLife
         {
             // TODO: Add your initialization logic here
 
-            base.Initialize();
+            
             player = new Player();
+            base.Initialize();
         }
 
         //
@@ -39,7 +43,7 @@ namespace ThugLife
         { 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,GraphicsDevice.Viewport.TitleSafeArea.Y +GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-            player.Initialize(Content.Load<Texture2D>("policecar/popo"), playerPosition);
+            player.Initialize(Content.Load<Texture2D>("player/playercar"), playerPosition);
 
         }
 
