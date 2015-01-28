@@ -41,7 +41,7 @@ namespace ThugLife
         }
 
         // The speed at which the enemy moves
-        float enemyMoveSpeed;
+        public float MoveSpeed;
 
 
         public void Initialize(Animation animation, Vector2 position)
@@ -63,7 +63,7 @@ namespace ThugLife
             Damage = 10;
 
             // Set how fast the enemy moves
-            enemyMoveSpeed = 3f;
+            MoveSpeed = 3f;
 
 
             // Set the score value of the enemy
@@ -74,7 +74,7 @@ namespace ThugLife
         public void Update(GameTime gameTime)
         {
             // The enemy always moves to the left so decrement it's xposition
-            Position.X += enemyMoveSpeed;
+            Position.X += MoveSpeed;
 
             // Update the position of the Animation
             PoliceAnimation.Position = Position;

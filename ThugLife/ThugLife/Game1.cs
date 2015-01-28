@@ -177,6 +177,7 @@ namespace ThugLife
             //Update cars
             UpdateCars(gameTime);
 
+            UpdateCollision();
             base.Update(gameTime);
         }
 
@@ -307,6 +308,67 @@ namespace ThugLife
                 {
                     cars.RemoveAt(i);
                 }
+            }
+        }
+
+        private void UpdateCollision()
+        {
+            // Use the Rectangle's built-in intersect function to 
+            // determine if two objects are overlapping
+            Rectangle rectanglePlayer;
+            Rectangle rectanglePolice;
+            Rectangle rectangleCar;
+
+            // Only create the rectangle once for the player
+            rectanglePlayer = new Rectangle((int)player.Position.X,
+            (int)player.Position.Y+50,
+            player.Width,
+            player.Height-90);
+
+            // Do the collision between the player and the enemies
+            for (int i = 0; i < police.Count; i++)
+            {
+                rectanglePolice = new Rectangle((int)police[i].Position.X,
+                (int)police[i].Position.Y,
+                police[i].Width,
+                police[i].Height);
+
+                // Determine if the two objects collided with each
+                // other
+                if (rectanglePlayer.Intersects(rectanglePolice))
+                {
+                    // Subtract the health from the player based on
+                    // the enemy damage
+                    player.Health -= police[i].Damage;
+                    if (police[i].Position.Y > player.Position.Y) police[i].Position.Y +=  2;
+                    else police[i].Position.Y -= 2;
+                    // Since the enemy collided with the player
+                    // destroy it
+                    //police[i].Health -= 1;
+                    //police[i].Position.X = player.Position.X - police[i].Width;
+                    police[i].Position.X += -10;
+                    //police[i].Position.Y += 1;
+                    // If the player health is less than zero we died
+                    if (player.Health <= 0)
+                        player.Active = false;
+                }
+
+                for (int j = 0; j < cars.Count; j++)
+                {
+                    rectangleCar = new Rectangle((int)cars[j].Position.X,
+                    (int)cars[j].Position.Y,
+                    cars[j].Width,
+                    cars[j].Height);
+
+                    if (rectangleCar.Intersects(rectanglePolice))
+                    {
+                        if (police[i].Position.Y >= cars[j].Position.Y) police[i].Position.Y += 2;
+                        else police[i].Position.Y -= 2;
+                    }
+                }
+
+                
+
             }
         }
 
