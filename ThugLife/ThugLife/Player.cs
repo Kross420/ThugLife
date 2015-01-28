@@ -11,7 +11,7 @@ namespace ThugLife
     {
 
         public Texture2D PlayerImage; //Spēlētāja bilde
-        Vector2 Position; // pozīcija
+        public Vector2 Position; // pozīcija
         public bool Active; // stāvoklis
         public int Health; // dzīvības
         // iegūst bildes izmērus
