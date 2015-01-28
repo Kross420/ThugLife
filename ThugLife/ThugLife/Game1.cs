@@ -132,35 +132,31 @@ namespace ThugLife
 
             player.Update(gameTime);
 
-            // Get Thumbstick Controls
-            player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
-            player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * playerMoveSpeed;
-
             // Use the Keyboard / Dpad
-            if (currentKeyboardState.IsKeyDown(Keys.Left) ||
+            if (currentKeyboardState.IsKeyDown(Keys.A) ||
             currentGamePadState.DPad.Left == ButtonState.Pressed)
             {
                 player.Position.X -= playerMoveSpeed;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Right) ||
+            if (currentKeyboardState.IsKeyDown(Keys.D) ||
             currentGamePadState.DPad.Right == ButtonState.Pressed)
             {
                 player.Position.X += playerMoveSpeed;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Up) ||
+            if (currentKeyboardState.IsKeyDown(Keys.W) ||
             currentGamePadState.DPad.Up == ButtonState.Pressed)
             {
                 player.Position.Y -= playerMoveSpeed;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Down) ||
+            if (currentKeyboardState.IsKeyDown(Keys.S) ||
             currentGamePadState.DPad.Down == ButtonState.Pressed)
             {
                 player.Position.Y += playerMoveSpeed;
             }
 
             // Make sure that the player does not go out of bounds
-            player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
-            player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
+            player.Position.X = MathHelper.Clamp(player.Position.X, player.Width / 2, GraphicsDevice.Viewport.Width - player.Width / 2);
+            player.Position.Y = MathHelper.Clamp(player.Position.Y, 340, 605);
         }
 
         //
