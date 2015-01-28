@@ -83,10 +83,10 @@ namespace ThugLife
             // Load the parallaxing background
             skiesLayer1.Initialize(Content, "bg2", GraphicsDevice.Viewport.Width, -1);
             skiesLayer2.Initialize(Content, "bg3", GraphicsDevice.Viewport.Width, -2);
-            ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -2);
-            buildings.Initialize(Content, "buildings", GraphicsDevice.Viewport.Width, -2);
-            road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -2);
-            barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -2);
+            ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -8);
+            buildings.Initialize(Content, "buildings", GraphicsDevice.Viewport.Width, -4);
+            road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -8);
+            barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -8);
 
             skies = Content.Load<Texture2D>("bg1");
 
@@ -175,10 +175,12 @@ namespace ThugLife
             // Draw the moving background
             skiesLayer1.Draw(spriteBatch);
             skiesLayer2.Draw(spriteBatch);
-
+            buildings.Draw(spriteBatch);
+            road.Draw(spriteBatch);
+            ground.Draw(spriteBatch);
             // Draw the Player
             player.Draw(spriteBatch);
-
+            barrier.Draw(spriteBatch);
             spriteBatch.End(); // Stop drawing
 
             base.Draw(gameTime);
