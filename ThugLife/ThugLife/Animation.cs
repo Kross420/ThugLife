@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 
-namespace Shooter
+namespace ThugLife
 {
     /// <summary>
     /// This is a game component that implements IUpdateable.

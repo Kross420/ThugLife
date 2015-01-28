@@ -29,6 +29,17 @@ namespace ThugLife
         // A movement speed for the player
         float playerMoveSpeed;
 
+        // Image used to display the static background
+        Texture2D skies;
+
+        // Parallaxing Layers
+        ParallaxingBackground skiesLayer1;
+        ParallaxingBackground skiesLayer2;
+        ParallaxingBackground ground;
+        ParallaxingBackground buildings;
+        ParallaxingBackground road;
+        ParallaxingBackground barrier;
+
         
 
         public Game1()
@@ -45,15 +56,39 @@ namespace ThugLife
         {
             player = new Player();
             playerMoveSpeed = 8.0f;
+
+            skiesLayer1 = new ParallaxingBackground();
+            skiesLayer2 = new ParallaxingBackground();
+            ground = new ParallaxingBackground();
+            buildings = new ParallaxingBackground();
+            road = new ParallaxingBackground();
+            barrier = new ParallaxingBackground();
+
             base.Initialize();
         }
 
         //
         protected override void LoadContent()
-        { 
+        {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,GraphicsDevice.Viewport.TitleSafeArea.Y +GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-            player.Initialize(Content.Load<Texture2D>("playercar"), playerPosition);
+
+            Animation playerAnimation = new Animation();
+            Texture2D playerTexture = Content.Load<Texture2D>("playercar");
+            playerAnimation.Initialize(playerTexture, Vector2.Zero, 331, 99, 4, 30, Color.White, 1f, true);
+
+            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y
+            + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+            player.Initialize(playerAnimation, playerPosition);
+
+            // Load the parallaxing background
+            skiesLayer1.Initialize(Content, "bg2", GraphicsDevice.Viewport.Width, -1);
+            skiesLayer2.Initialize(Content, "bg3", GraphicsDevice.Viewport.Width, -2);
+            ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -2);
+            buildings.Initialize(Content, "buildings", GraphicsDevice.Viewport.Width, -2);
+            road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -2);
+            barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -2);
+
+            skies = Content.Load<Texture2D>("bg1");
 
         }
 
@@ -81,12 +116,21 @@ namespace ThugLife
             //Update the player
             UpdatePlayer(gameTime);
 
+            skiesLayer1.Update();
+            skiesLayer2.Update();
+            ground.Update();
+            buildings.Update();
+            road.Update();
+            barrier.Update();
+
             base.Update(gameTime);
         }
 
         //
         private void UpdatePlayer(GameTime gameTime)
         {
+
+            player.Update(gameTime);
 
             // Get Thumbstick Controls
             player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
@@ -125,6 +169,12 @@ namespace ThugLife
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(); // Start drawing
+
+            spriteBatch.Draw(skies, Vector2.Zero, Color.White);
+
+            // Draw the moving background
+            skiesLayer1.Draw(spriteBatch);
+            skiesLayer2.Draw(spriteBatch);
 
             // Draw the Player
             player.Draw(spriteBatch);
