@@ -325,7 +325,7 @@ namespace ThugLife
             player.Width,
             player.Height-90);
 
-            // Do the collision between the player and the enemies
+            // player vs cop
             for (int i = 0; i < police.Count; i++)
             {
                 rectanglePolice = new Rectangle((int)police[i].Position.X,
@@ -353,6 +353,7 @@ namespace ThugLife
                         player.Active = false;
                 }
 
+                
                 for (int j = 0; j < cars.Count; j++)
                 {
                     rectangleCar = new Rectangle((int)cars[j].Position.X,
@@ -360,12 +361,50 @@ namespace ThugLife
                     cars[j].Width,
                     cars[j].Height);
 
+                    //car vs player
+                    if (rectangleCar.Intersects(rectanglePlayer))
+                    {
+                        if (player.Position.Y >= cars[j].Position.Y) // ja player ir zemak par car
+                        {
+                            if (cars[j].Position.Y > 350) //car nav parak augstu
+                            {
+                                cars[j].Position.Y -= 2; //car iet uz augshu
+                            }
+                            else //ja ir parak augstu
+                            {
+                                cars[j].Position.Y += 2;
+                            }
+                        }
+                        else // ja player ir augstak par car
+                        {
+                            if (cars[j].Position.Y + cars[j].Height < 720) //car nav parak zemu
+                            {
+                                cars[j].Position.Y += 2; //car iet uz leju
+                            }
+                            else //ja ir parak zemu
+                            {
+                                cars[j].Position.Y -= 2;
+                            }
+                        }
+                    }
+
+                    //car vs cop
                     if (rectangleCar.Intersects(rectanglePolice))
                     {
                         if (police[i].Position.Y >= cars[j].Position.Y)
                         {
-                            police[i].Position.Y += 2;
-                            cars[j].Position.Y -= 1;
+                            if (police[i].Position.Y + police[i].Height < 720)
+                            {
+                                police[i].Position.Y += 2;
+
+                            }
+                            else
+                            {
+                                police[i].Position.X += -3;
+                                cars[j].Position.Y -= 1;
+                            }
+
+                            if (cars[j].Position.Y+cars[j].Height < 646) cars[j].Position.Y -= 1;
                         }
                         else
                         {
