@@ -43,6 +43,7 @@ namespace ThugLife
         // The speed at which the enemy moves
         float enemyMoveSpeed;
 
+
         public void Initialize(Animation animation, Vector2 position)
         {
             // Load the enemy ship texture
@@ -73,7 +74,7 @@ namespace ThugLife
         public void Update(GameTime gameTime)
         {
             // The enemy always moves to the left so decrement it's xposition
-            Position.X -= enemyMoveSpeed;
+            Position.X += enemyMoveSpeed;
 
             // Update the position of the Animation
             PoliceAnimation.Position = Position;
@@ -82,7 +83,7 @@ namespace ThugLife
             PoliceAnimation.Update(gameTime);
 
             // If the enemy is past the screen or its health reaches 0 then deactivateit
-            if (Position.X < -Width || Health <= 0)
+            if (Position.X > 1024+Width || Health <= 0)
             {
                 // By setting the Active flag to false, the game will remove this objet fromthe
                 // active game list

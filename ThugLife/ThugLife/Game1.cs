@@ -40,6 +40,17 @@ namespace ThugLife
         ParallaxingBackground road;
         ParallaxingBackground barrier;
 
+        // Police
+        Texture2D policeTexture;
+        List<Police> police;
+
+        // The rate at which the enemies appear
+        TimeSpan policeSpawnTime;
+        TimeSpan policePreviousSpawnTime;
+        // A random number generator
+        Random random;
+
+
         
 
         public Game1()
@@ -64,6 +75,18 @@ namespace ThugLife
             road = new ParallaxingBackground();
             barrier = new ParallaxingBackground();
 
+            // Initialize the enemies list
+            police = new List<Police>();
+
+            // Set the time keepers to zero
+            policePreviousSpawnTime = TimeSpan.Zero;
+
+            // Used to determine how fast enemy respawns
+            policeSpawnTime = TimeSpan.FromSeconds(1.0f);
+
+            // Initialize our random number generator
+            random = new Random();
+
             base.Initialize();
         }
 
@@ -82,13 +105,16 @@ namespace ThugLife
 
             // Load the parallaxing background
             skiesLayer1.Initialize(Content, "bg2", GraphicsDevice.Viewport.Width, -1);
-            skiesLayer2.Initialize(Content, "bg3", GraphicsDevice.Viewport.Width, -2);
-            ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -8);
+            skiesLayer2.Initialize(Content, "bg3", GraphicsDevice.Viewport.Width, -1);
+            ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -16);
             buildings.Initialize(Content, "buildings", GraphicsDevice.Viewport.Width, -4);
-            road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -8);
-            barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -8);
+            road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -16);
+            barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -16);
 
             skies = Content.Load<Texture2D>("bg1");
+
+            //Police
+            policeTexture = Content.Load<Texture2D>("popo");
 
         }
 
@@ -122,6 +148,9 @@ namespace ThugLife
             buildings.Update();
             road.Update();
             barrier.Update();
+
+            //Update police
+            UpdatePolice(gameTime);
 
             base.Update(gameTime);
         }
@@ -159,6 +188,52 @@ namespace ThugLife
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 340, 605);
         }
 
+        // Update police
+        private void AddPolice()
+        {
+            // Create the animation object
+            Animation policeAnimation = new Animation();
+
+            // Initialize the animation with the correct animation information
+            policeAnimation.Initialize(policeTexture, Vector2.Zero, 336, 119, 3, 30, Color.White, 1f, true);
+
+            // Randomly generate the position of the enemy
+            Vector2 position = new Vector2(-policeTexture.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
+
+            // Create an enemy
+            Police policeCar = new Police();
+
+            // Initialize the enemy
+            policeCar.Initialize(policeAnimation, position);
+
+            // Add the enemy to the active enemies list
+            police.Add(policeCar);
+        }
+
+        //Update police
+        private void UpdatePolice(GameTime gameTime)
+        {
+            // Spawn a new enemy enemy every 1.5 seconds
+            if (gameTime.TotalGameTime - policePreviousSpawnTime > policeSpawnTime)
+            {
+                policePreviousSpawnTime = gameTime.TotalGameTime;
+
+                // Add an Enemy
+                AddPolice();
+            }
+
+            // Update the Enemies
+            for (int i = police.Count - 1; i >= 0; i--)
+            {
+                police[i].Update(gameTime);
+
+                if (police[i].Active == false)
+                {
+                    police.RemoveAt(i);
+                }
+            }
+        }
+
         //
         protected override void Draw(GameTime gameTime)
         {
@@ -176,6 +251,13 @@ namespace ThugLife
             ground.Draw(spriteBatch);
             // Draw the Player
             player.Draw(spriteBatch);
+            //Draw police
+            // Draw the Enemies
+            for (int i = 0; i < police.Count; i++)
+            {
+                police[i].Draw(spriteBatch);
+
+            }
             barrier.Draw(spriteBatch);
             spriteBatch.End(); // Stop drawing
 
