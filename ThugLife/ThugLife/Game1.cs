@@ -59,6 +59,14 @@ namespace ThugLife
         TimeSpan carsSpawnTime;
         TimeSpan carsPreviousSpawnTime;
 
+        //Bullets
+        Texture2D bulletTexture;
+        List<Bullets> bullets;
+
+        // The rate of fire of the player laser
+        TimeSpan fireTime;
+        TimeSpan previousFireTime;
+
 
         
 
@@ -105,6 +113,12 @@ namespace ThugLife
             // Used to determine how fast enemy respawns
             carsSpawnTime = TimeSpan.FromSeconds(8.0f);
 
+            //Bullets
+            bullets = new List<Bullets>();
+
+            // Set the laser to fire every quarter second
+            fireTime = TimeSpan.FromSeconds(.15f);
+
             base.Initialize();
         }
 
@@ -137,6 +151,9 @@ namespace ThugLife
             //Cars
             carTexture = Content.Load<Texture2D>("car1");
             carTexture2 = Content.Load<Texture2D>("car2");
+
+            //Bullets
+            bulletTexture = Content.Load<Texture2D>("bullet");
 
         }
 
@@ -178,6 +195,10 @@ namespace ThugLife
             UpdateCars(gameTime);
 
             UpdateCollision();
+
+            //Update bullets
+            UpdateBullets();
+
             base.Update(gameTime);
         }
 
@@ -212,6 +233,20 @@ namespace ThugLife
             // Make sure that the player does not go out of bounds
             player.Position.X = MathHelper.Clamp(player.Position.X, player.Width / 2, GraphicsDevice.Viewport.Width - player.Width / 2);
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 340, 605);
+
+            // Fire only every interval we set as the fireTime
+            if (currentKeyboardState.IsKeyDown(Keys.Left))
+            {
+                if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                {
+                // Reset our current time
+                previousFireTime = gameTime.TotalGameTime;
+
+                // Add the projectile, but add it to the front and center of the player
+                AddBullets(player.Position + new Vector2(player.Width / 2, 0));
+                }
+            }
+            
         }
 
         // Update police
@@ -452,6 +487,29 @@ namespace ThugLife
             }
         }
 
+        //Add bullets
+        private void AddBullets(Vector2 position)
+        {
+            Bullets bullet = new Bullets();
+            bullet.Initialize(GraphicsDevice.Viewport, bulletTexture, position);
+            bullets.Add(bullet);
+        }
+
+        // Update bullets
+        private void UpdateBullets()
+        {
+            // Update the Projectiles
+            for (int i = bullets.Count - 1; i >= 0; i--)
+            {
+                bullets[i].Update();
+
+                if (bullets[i].Active == false)
+                {
+                    bullets.RemoveAt(i);
+                }
+            }
+        }
+
         //
         protected override void Draw(GameTime gameTime)
         {
@@ -482,6 +540,12 @@ namespace ThugLife
                 cars[i].Draw(spriteBatch);
 
             }
+            // Draw the bullets
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                bullets[i].Draw(spriteBatch);
+            }
+
             barrier.Draw(spriteBatch);
             spriteBatch.End(); // Stop drawing
 
