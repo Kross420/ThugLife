@@ -34,7 +34,7 @@ namespace ThugLife
         }
 
         // Determines how fast the projectile moves
-        float bulletMoveSpeed;
+        public float bulletMoveSpeed;
 
 
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position)
@@ -52,10 +52,10 @@ namespace ThugLife
         public void Update()
         {
             // Projectiles always move to the right
-            Position.X += bulletMoveSpeed;
+            Position.X -= bulletMoveSpeed;
 
             // Deactivate the bullet if it goes out of screen
-            if (Position.X + Texture.Width / 2 > viewport.Width)
+            if ((Position.X + Texture.Width / 2 > viewport.Width) || (Position.X + Texture.Width / 2 < 0))
                 Active = false;
         }
 

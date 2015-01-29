@@ -63,6 +63,10 @@ namespace ThugLife
         Texture2D bulletTexture;
         List<Bullets> bullets;
 
+        // Thug
+        Texture2D thugTexture;
+        Texture2D thugTextureForward;
+
         // The rate of fire of the player laser
         TimeSpan fireTime;
         TimeSpan previousFireTime;
@@ -117,7 +121,7 @@ namespace ThugLife
             bullets = new List<Bullets>();
 
             // Set the laser to fire every quarter second
-            fireTime = TimeSpan.FromSeconds(.15f);
+            fireTime = TimeSpan.FromSeconds(.5f);
 
             base.Initialize();
         }
@@ -154,6 +158,10 @@ namespace ThugLife
 
             //Bullets
             bulletTexture = Content.Load<Texture2D>("bullet");
+
+            //Thug
+            thugTexture = Content.Load<Texture2D>("gangsta");
+            thugTextureForward = Content.Load<Texture2D>("gangstaForward");
 
         }
 
@@ -243,7 +251,19 @@ namespace ThugLife
                 previousFireTime = gameTime.TotalGameTime;
 
                 // Add the projectile, but add it to the front and center of the player
-                AddBullets(player.Position + new Vector2(player.Width / 2, 0));
+                AddBulletsBackward(player.Position + new Vector2(-35, -37));
+                }
+            }
+
+            if (currentKeyboardState.IsKeyDown(Keys.Right))
+            {
+                if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                {
+                    // Reset our current time
+                    previousFireTime = gameTime.TotalGameTime;
+
+                    // Add the projectile, but add it to the front and center of the player
+                    AddBulletsForward(player.Position + new Vector2(50, -37));
                 }
             }
             
@@ -487,11 +507,22 @@ namespace ThugLife
             }
         }
 
-        //Add bullets
-        private void AddBullets(Vector2 position)
+        //Add bullets backward
+        private void AddBulletsBackward(Vector2 position)
         {
+            
             Bullets bullet = new Bullets();
             bullet.Initialize(GraphicsDevice.Viewport, bulletTexture, position);
+            bullets.Add(bullet);
+        }
+
+        //Add bullets forward
+        private void AddBulletsForward(Vector2 position)
+        {
+
+            Bullets bullet = new Bullets();
+            bullet.Initialize(GraphicsDevice.Viewport, bulletTexture, position);
+            bullet.bulletMoveSpeed = -20f;
             bullets.Add(bullet);
         }
 
@@ -508,6 +539,15 @@ namespace ThugLife
                     bullets.RemoveAt(i);
                 }
             }
+        }
+
+        private void DrawGangsta(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(thugTexture, player.Position, null, Color.White, 0f, new Vector2(thugTexture.Width / 2 + 10, thugTexture.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
+        }
+        private void DrawGangstaForward(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(thugTextureForward, player.Position, null, Color.White, 0f, new Vector2(thugTextureForward.Width / 2 - 30, thugTextureForward.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
         }
 
         //
@@ -527,6 +567,8 @@ namespace ThugLife
             ground.Draw(spriteBatch);
             // Draw the Player
             player.Draw(spriteBatch);
+            if (currentKeyboardState.IsKeyDown(Keys.Left)) DrawGangsta(spriteBatch);
+            if (currentKeyboardState.IsKeyDown(Keys.Right)) DrawGangstaForward(spriteBatch);
             //Draw police
             // Draw the Enemies
             for (int i = 0; i < police.Count; i++)
