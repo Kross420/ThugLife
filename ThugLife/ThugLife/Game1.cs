@@ -322,13 +322,17 @@ namespace ThugLife
         private void UpdatePolice(GameTime gameTime)
         {
             // Spawn a new enemy enemy every 1.5 seconds
-            if (gameTime.TotalGameTime - policePreviousSpawnTime > policeSpawnTime)
+            if (police.Count < 3)
             {
-                policePreviousSpawnTime = gameTime.TotalGameTime;
+                if (gameTime.TotalGameTime - policePreviousSpawnTime > policeSpawnTime)
+                {
+                    policePreviousSpawnTime = gameTime.TotalGameTime;
 
-                // Add an Enemy
-                AddPolice();
+                    // Add an Enemy
+                    AddPolice();
+                }
             }
+            
 
             // Update the Enemies
             for (int i = police.Count - 1; i >= 0; i--)
@@ -412,6 +416,7 @@ namespace ThugLife
             // determine if two objects are overlapping
             Rectangle rectanglePlayer;
             Rectangle rectanglePolice;
+            Rectangle rectanglePolice2;
             Rectangle rectangleCar;
 
             // Only create the rectangle once for the player
@@ -520,6 +525,45 @@ namespace ThugLife
                                 police[i].Position.Y -= 2; //police iet uz augðu
                                 if (cars[j].Position.Y + cars[j].Height < 710) //ja car nav parak zemu
                                     cars[j].Position.Y += 2; //car iet uz leju
+                            }
+                            else //ja  police ir parak augstu
+                            {
+                                police[i].Position.Y += 2; //police iet uz leju
+                            }
+                        }
+                    }
+                }
+
+                for (int k = 1; k < police.Count; k++)
+                {
+                    rectanglePolice2 = new Rectangle((int)police[k].Position.X,
+                    (int)police[k].Position.Y,
+                    police[k].Width,
+                    police[k].Height);
+
+                    //cop vs cop
+                    if (rectanglePolice2.Intersects(rectanglePolice))
+                    {
+                        if (police[i].Position.Y >= police[k].Position.Y) // ja police ir zemak par car
+                        {
+                            if (police[i].Position.Y + police[i].Height < 710) //police nav parak zemu
+                            {
+                                police[i].Position.Y += 2; //police iet uz leju
+                                if (police[k].Position.Y > 350) //ja car ir parak zemu
+                                    police[k].Position.Y -= 2; //car iet uz augðu
+                            }
+                            else //ja police ir parak zemu
+                            {
+                                police[i].Position.Y -= 2; //police iet uz augshu
+                            }
+                        }
+                        else // ja police ir augstak par car
+                        {
+                            if (police[i].Position.Y > 350) //ja police nav parak augstu
+                            {
+                                police[i].Position.Y -= 2; //police iet uz augðu
+                                if (police[k].Position.Y + police[k].Height < 710) //ja car nav parak zemu
+                                    police[k].Position.Y += 2; //car iet uz leju
                             }
                             else //ja  police ir parak augstu
                             {
