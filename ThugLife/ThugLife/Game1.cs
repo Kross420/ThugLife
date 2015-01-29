@@ -251,6 +251,19 @@ namespace ThugLife
             // Update the Enemies
             for (int i = police.Count - 1; i >= 0; i--)
             {
+                if (police[i].Position.X > player.Position.X + player.Width) //ja cop ir priekðâ player
+                {
+                    police[i].MoveSpeed = -1; //cop iet uz atpakaïu
+
+                    if (police[i].Position.Y > player.Position.Y) //ja cop ir zemak par player
+                        police[i].Position.Y -= 2; //cop iet uz augshu
+                    else //ja cop ir augstak par player
+                        police[i].Position.Y += 2; //cop iet uz leju
+                }
+                else //ja cop nav priekshaa player
+                    police[i].MoveSpeed = 3; //tuprina braukt uz priekshu
+
+
                 police[i].Update(gameTime);
 
                 if (police[i].Active == false)
@@ -328,30 +341,44 @@ namespace ThugLife
             // player vs cop
             for (int i = 0; i < police.Count; i++)
             {
+               
                 rectanglePolice = new Rectangle((int)police[i].Position.X,
                 (int)police[i].Position.Y,
                 police[i].Width,
                 police[i].Height);
 
-                // Determine if the two objects collided with each
-                // other
-                if (rectanglePlayer.Intersects(rectanglePolice))
+                if (rectanglePlayer.Intersects(rectanglePolice)) 
                 {
-                    // Subtract the health from the player based on
-                    // the enemy damage
                     player.Health -= police[i].Damage;
-                    if (police[i].Position.Y > player.Position.Y) police[i].Position.Y +=  2;
-                    else police[i].Position.Y -= 2;
-                    // Since the enemy collided with the player
-                    // destroy it
-                    //police[i].Health -= 1;
-                    //police[i].Position.X = player.Position.X - police[i].Width;
-                    police[i].Position.X += -10;
-                    //police[i].Position.Y += 1;
-                    // If the player health is less than zero we died
+                    if (police[i].Position.Y > player.Position.Y) // ja cop ir zemak par player
+                    {
+                        if (police[i].Position.Y + police[i].Height < 710) //ja cop nav parak zemu
+                        {
+                            police[i].Position.Y += 2; //cop iet uz leju
+                        }
+                        
+                    }
+                    else //ja cop augstak par player
+                    {
+                        if (police[i].Position.Y > 350) //ja cop nav parak augstu
+                        {
+                            police[i].Position.Y -= 2; //cop iet uz augshu
+                        }
+                    }
+                    if (police[i].Position.X < player.Position.X) //ja cop ir aizmugure player
+                    {
+                        police[i].Position.X -= 10; // cop iet uz atpakalu
+                    }
+                    else //ja cop ir prieksha player
+                    {
+                        police[i].Position.X += 10; //cop iet uz priekshu
+                    }
+
+
                     if (player.Health <= 0)
                         player.Active = false;
                 }
+
 
                 
                 for (int j = 0; j < cars.Count; j++)
@@ -377,7 +404,7 @@ namespace ThugLife
                         }
                         else // ja player ir augstak par car
                         {
-                            if (cars[j].Position.Y + cars[j].Height < 720) //car nav parak zemu
+                            if (cars[j].Position.Y + cars[j].Height < 710) //car nav parak zemu
                             {
                                 cars[j].Position.Y += 2; //car iet uz leju
                             }
@@ -391,26 +418,31 @@ namespace ThugLife
                     //car vs cop
                     if (rectangleCar.Intersects(rectanglePolice))
                     {
-                        if (police[i].Position.Y >= cars[j].Position.Y)
+                        if (police[i].Position.Y >= cars[j].Position.Y) // ja police ir zemak par car
                         {
-                            if (police[i].Position.Y + police[i].Height < 720)
+                            if (police[i].Position.Y + police[i].Height < 710) //police nav parak zemu
                             {
-                                police[i].Position.Y += 2;
+                                police[i].Position.Y += 2; //police iet uz leju
+                                if (cars[j].Position.Y > 350) cars[j].Position.Y -= 2;
 
+                            }
+                            else //ja ir parak augstu
+                            {
+                                police[i].Position.Y -= 2;
+                            }
+                        }
+                        else // ja police ir augstak par car
+                        {
+                            if (police[i].Position.Y > 350)
+                            {
+                                police[i].Position.Y -= 2;
+                                if (cars[j].Position.Y + cars[j].Height < 710) cars[j].Position.Y += 2;
                             }
                             else
                             {
-                                police[i].Position.X += -3;
-                                cars[j].Position.Y -= 1;
+                                police[i].Position.Y += 2;
                             }
-
-                            if (cars[j].Position.Y+cars[j].Height < 646) cars[j].Position.Y -= 1;
                         }
-                        else
-                        {
-                            police[i].Position.Y -= 2;
-                            cars[j].Position.Y += 1;
-                        } 
                     }
                 }
 
