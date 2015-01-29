@@ -62,6 +62,8 @@ namespace ThugLife
         //Bullets
         Texture2D bulletTexture;
         List<Bullets> bullets;
+        bool shooting;
+        Texture2D gunshotTexture;
 
         // Thug
         Texture2D thugTexture;
@@ -70,6 +72,15 @@ namespace ThugLife
         // The rate of fire of the player laser
         TimeSpan fireTime;
         TimeSpan previousFireTime;
+
+        // The sound that is played when a laser is fired
+        SoundEffect shootingSound;
+
+        // The sound used when the player or an enemy dies
+        SoundEffect explosionSound;
+
+        // The music played during gameplay
+        Song gameplayMusic;
 
 
         
@@ -158,10 +169,22 @@ namespace ThugLife
 
             //Bullets
             bulletTexture = Content.Load<Texture2D>("bullet");
+            gunshotTexture = Content.Load<Texture2D>("gunshot");
 
             //Thug
             thugTexture = Content.Load<Texture2D>("gangsta");
             thugTextureForward = Content.Load<Texture2D>("gangstaForward");
+
+            //Sound
+            // Load the music
+            //gameplayMusic = Content.Load<Song>("sound/gameMusic");
+
+            // Load the laser and explosion sound effect
+            shootingSound = Content.Load<SoundEffect>("sound/gunshot");
+            //explosionSound = Content.Load<SoundEffect>("sound/explosion");
+
+            // Start the music right away
+            //PlayMusic(gameplayMusic);
 
         }
 
@@ -245,25 +268,29 @@ namespace ThugLife
             // Fire only every interval we set as the fireTime
             if (currentKeyboardState.IsKeyDown(Keys.Left))
             {
+                shooting = false;
                 if (gameTime.TotalGameTime - previousFireTime > fireTime)
                 {
                 // Reset our current time
                 previousFireTime = gameTime.TotalGameTime;
-
+                shooting = true;
                 // Add the projectile, but add it to the front and center of the player
                 AddBulletsBackward(player.Position + new Vector2(-35, -37));
+                shootingSound.Play();
                 }
             }
 
             if (currentKeyboardState.IsKeyDown(Keys.Right))
             {
+                shooting = false;
                 if (gameTime.TotalGameTime - previousFireTime > fireTime)
                 {
                     // Reset our current time
                     previousFireTime = gameTime.TotalGameTime;
-
+                    shooting = true;
                     // Add the projectile, but add it to the front and center of the player
                     AddBulletsForward(player.Position + new Vector2(50, -37));
+                    shootingSound.Play();
                 }
             }
             
@@ -549,6 +576,31 @@ namespace ThugLife
         {
             spriteBatch.Draw(thugTextureForward, player.Position, null, Color.White, 0f, new Vector2(thugTextureForward.Width / 2 - 30, thugTextureForward.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
         }
+        private void DrawGunshotBackward(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(gunshotTexture, player.Position, null, Color.White, 0f, new Vector2(gunshotTexture.Width / 2 + 55, gunshotTexture.Height / 2 + 37), 1f, SpriteEffects.None, 0f);
+        }
+        private void DrawGunshotForward(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(gunshotTexture, player.Position, null, Color.White, 0f, new Vector2(gunshotTexture.Width / 2 - 73, gunshotTexture.Height / 2 + 37), 1f, SpriteEffects.None, 0f);
+        }
+
+
+        private void PlayMusic(Song song)
+        {
+            // Due to the way the MediaPlayer plays music,
+            // we have to catch the exception. Music will play when the game is not tethered
+            try
+            {
+                // Play the music
+                MediaPlayer.Play(song);
+
+                // Loop the currently playing song
+                MediaPlayer.IsRepeating = true;
+            }
+            catch { }
+        }
+
 
         //
         protected override void Draw(GameTime gameTime)
@@ -565,10 +617,8 @@ namespace ThugLife
             buildings.Draw(spriteBatch);
             road.Draw(spriteBatch);
             ground.Draw(spriteBatch);
-            // Draw the Player
-            player.Draw(spriteBatch);
-            if (currentKeyboardState.IsKeyDown(Keys.Left)) DrawGangsta(spriteBatch);
-            if (currentKeyboardState.IsKeyDown(Keys.Right)) DrawGangstaForward(spriteBatch);
+            
+            
             //Draw police
             // Draw the Enemies
             for (int i = 0; i < police.Count; i++)
@@ -582,10 +632,23 @@ namespace ThugLife
                 cars[i].Draw(spriteBatch);
 
             }
+            player.Draw(spriteBatch);
             // Draw the bullets
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Draw(spriteBatch);
+            }
+            // Draw the Player
+            
+            if (currentKeyboardState.IsKeyDown(Keys.Left))
+            {
+                DrawGangsta(spriteBatch);
+                if (shooting) DrawGunshotBackward(spriteBatch);
+            }
+            if (currentKeyboardState.IsKeyDown(Keys.Right))
+            {
+                DrawGangstaForward(spriteBatch);
+                if (shooting) DrawGunshotForward(spriteBatch);
             }
 
             barrier.Draw(spriteBatch);
