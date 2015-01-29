@@ -78,9 +78,11 @@ namespace ThugLife
 
         // The sound used when the player or an enemy dies
         SoundEffect explosionSound;
+        SoundEffect tireScreetchSound;
 
         // The music played during gameplay
         Song gameplayMusic;
+        Song engine;
 
 
         
@@ -178,10 +180,12 @@ namespace ThugLife
             //Sound
             // Load the music
             //gameplayMusic = Content.Load<Song>("sound/gameMusic");
+            engine = Content.Load<Song>("sound/engine");
 
             // Load the laser and explosion sound effect
             shootingSound = Content.Load<SoundEffect>("sound/gunshot");
-            //explosionSound = Content.Load<SoundEffect>("sound/explosion");
+            explosionSound = Content.Load<SoundEffect>("sound/explosion");
+            tireScreetchSound = Content.Load<SoundEffect>("sound/screetch");
 
             // Start the music right away
             //PlayMusic(gameplayMusic);
@@ -354,6 +358,10 @@ namespace ThugLife
 
                 if (police[i].Active == false)
                 {
+                    if (police[i].Health <= 0)
+                    {
+                        explosionSound.Play();
+                    }
                     police.RemoveAt(i);
                 }
             }
@@ -418,6 +426,7 @@ namespace ThugLife
             Rectangle rectanglePolice;
             Rectangle rectanglePolice2;
             Rectangle rectangleCar;
+            Rectangle rectangleBullet;
 
             // Only create the rectangle once for the player
             rectanglePlayer = new Rectangle((int)player.Position.X,
@@ -575,6 +584,50 @@ namespace ThugLife
 
                 
 
+            }
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                for (int j = 0; j < police.Count; j++)
+                {
+                    for (int k = 0; k < cars.Count; k++)
+                    {
+                        
+
+                        // Create the rectangles we need to determine if we collided with each other
+                        rectangleBullet = new Rectangle((int)bullets[i].Position.X -
+                        bullets[i].Width / 2, (int)bullets[i].Position.Y -
+                        bullets[i].Height / 2, bullets[i].Width, bullets[i].Height);
+
+                        rectanglePolice = new Rectangle((int)police[j].Position.X - police[j].Width / 2,
+                        (int)police[j].Position.Y - police[j].Height / 2,
+                        police[j].Width, police[j].Height);
+
+                        rectangleCar = new Rectangle((int)cars[k].Position.X -
+                        cars[k].Width / 2, (int)cars[k].Position.Y -
+                        cars[k].Height / 2, cars[k].Width, cars[k].Height);
+
+                        // Determine if the two objects collided with each other
+                        if (rectangleBullet.Intersects(rectanglePolice))
+                        {
+                            police[j].Health -= bullets[i].Damage;
+                            bullets[i].Active = false;
+                        }
+
+                        if (rectangleBullet.Intersects(rectangleCar))
+                        {
+                            cars[k].Health -= bullets[i].Damage;
+                            cars[k].carMoveSpeed = 10;
+                            if (!cars[k].shot)
+                            {
+                                tireScreetchSound.Play();
+                                cars[k].shot = true;
+                            }
+                            
+                            bullets[i].Active = false;
+                        }
+
+                    }
+                }
             }
         }
 
