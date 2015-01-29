@@ -399,7 +399,7 @@ namespace ThugLife
                             }
                             else //ja ir parak augstu
                             {
-                                cars[j].Position.Y += 2;
+                                cars[j].Position.Y += 2; //car iet uz leju
                             }
                         }
                         else // ja player ir augstak par car
@@ -410,7 +410,7 @@ namespace ThugLife
                             }
                             else //ja ir parak zemu
                             {
-                                cars[j].Position.Y -= 2;
+                                cars[j].Position.Y -= 2; //car iet uz augðu
                             }
                         }
                     }
@@ -423,24 +423,25 @@ namespace ThugLife
                             if (police[i].Position.Y + police[i].Height < 710) //police nav parak zemu
                             {
                                 police[i].Position.Y += 2; //police iet uz leju
-                                if (cars[j].Position.Y > 350) cars[j].Position.Y -= 2;
-
+                                if (cars[j].Position.Y > 350) //ja car ir parak zemu
+                                    cars[j].Position.Y -= 2; //car iet uz augðu
                             }
-                            else //ja ir parak augstu
+                            else //ja police ir parak zemu
                             {
-                                police[i].Position.Y -= 2;
+                                police[i].Position.Y -= 2; //police iet uz augshu
                             }
                         }
                         else // ja police ir augstak par car
                         {
-                            if (police[i].Position.Y > 350)
+                            if (police[i].Position.Y > 350) //ja police nav parak augstu
                             {
-                                police[i].Position.Y -= 2;
-                                if (cars[j].Position.Y + cars[j].Height < 710) cars[j].Position.Y += 2;
+                                police[i].Position.Y -= 2; //police iet uz augðu
+                                if (cars[j].Position.Y + cars[j].Height < 710) //ja car nav parak zemu
+                                    cars[j].Position.Y += 2; //car iet uz leju
                             }
-                            else
+                            else //ja  police ir parak augstu
                             {
-                                police[i].Position.Y += 2;
+                                police[i].Position.Y += 2; //police iet uz leju
                             }
                         }
                     }
