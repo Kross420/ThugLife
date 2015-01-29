@@ -45,7 +45,7 @@ namespace ThugLife
 
             Active = true;
 
-            Damage = 2;
+            Damage = 20;
 
             bulletMoveSpeed = 20f;
         }

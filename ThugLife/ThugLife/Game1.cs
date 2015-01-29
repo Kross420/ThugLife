@@ -16,7 +16,7 @@ namespace ThugLife
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Player player;
+        PlayerCar player;
 
         // Keyboard states used to determine key presses
         KeyboardState currentKeyboardState;
@@ -28,6 +28,7 @@ namespace ThugLife
 
         // A movement speed for the player
         float playerMoveSpeed;
+        bool busted = false;
 
         // Image used to display the static background
         Texture2D skies;
@@ -79,16 +80,31 @@ namespace ThugLife
         // The sound used when the player or an enemy dies
         SoundEffect explosionSound;
         SoundEffect tireScreetchSound;
+        SoundEffect policeSpawn;
+        SoundEffect policeSiren;
 
         // The music played during gameplay
         Song gameplayMusic;
         Song engine;
 
+        //Explosion
+        Texture2D explosionTexture;
+        List<Animation> explosions;
+
+        // The font used to display UI elements
+        SpriteFont font;
+
+        // Game over screen
+        Texture2D gameOver;
+
+        Player newPlayer;
+
 
         
 
-        public Game1()
+        public Game1(Player newPlayer)
         {
+            this.newPlayer = newPlayer;
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferHeight = 768;
@@ -99,7 +115,7 @@ namespace ThugLife
         //
         protected override void Initialize()
         {
-            player = new Player();
+            player = new PlayerCar();
             playerMoveSpeed = 8.0f;
 
             skiesLayer1 = new ParallaxingBackground();
@@ -135,6 +151,9 @@ namespace ThugLife
 
             // Set the laser to fire every quarter second
             fireTime = TimeSpan.FromSeconds(.5f);
+
+            //explosion
+            explosions = new List<Animation>();
 
             base.Initialize();
         }
@@ -180,15 +199,27 @@ namespace ThugLife
             //Sound
             // Load the music
             //gameplayMusic = Content.Load<Song>("sound/gameMusic");
-            engine = Content.Load<Song>("sound/engine");
+            //engine = Content.Load<Song>("sound/driving");
 
             // Load the laser and explosion sound effect
             shootingSound = Content.Load<SoundEffect>("sound/gunshot");
             explosionSound = Content.Load<SoundEffect>("sound/explosion");
             tireScreetchSound = Content.Load<SoundEffect>("sound/screetch");
 
+            policeSpawn = Content.Load<SoundEffect>("sound/policeSiren");
+            policeSiren = Content.Load<SoundEffect>("sound/policeSiren2");
+
+            // Explosion
+            explosionTexture = Content.Load<Texture2D>("explosion_anim");
+
+            // Load the score font
+            font = Content.Load<SpriteFont>("gameFont");
+
+            // Game over screen
+            gameOver = Content.Load<Texture2D>("gameOver");
+
             // Start the music right away
-            //PlayMusic(gameplayMusic);
+            PlayMusic(engine);
 
         }
 
@@ -213,26 +244,32 @@ namespace ThugLife
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
 
-            //Update the player
-            UpdatePlayer(gameTime);
+            if (player.Health > 0)
+            {
+                //Update the player
+                UpdatePlayer(gameTime);
 
-            skiesLayer1.Update();
-            skiesLayer2.Update();
-            ground.Update();
-            buildings.Update();
-            road.Update();
-            barrier.Update();
+                skiesLayer1.Update();
+                skiesLayer2.Update();
+                ground.Update();
+                buildings.Update();
+                road.Update();
+                barrier.Update();
 
-            //Update police
-            UpdatePolice(gameTime);
+                //Update police
+                UpdatePolice(gameTime);
 
-            //Update cars
-            UpdateCars(gameTime);
+                //Update cars
+                UpdateCars(gameTime);
 
-            UpdateCollision();
+                UpdateCollision();
 
-            //Update bullets
-            UpdateBullets();
+                //Update bullets
+                UpdateBullets();
+
+                // Explosions
+                UpdateExplosions(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -265,36 +302,43 @@ namespace ThugLife
                 player.Position.Y += playerMoveSpeed;
             }
 
+            
+
             // Make sure that the player does not go out of bounds
             player.Position.X = MathHelper.Clamp(player.Position.X, player.Width / 2, GraphicsDevice.Viewport.Width - player.Width / 2);
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 340, 605);
 
             // Fire only every interval we set as the fireTime
-            if (currentKeyboardState.IsKeyDown(Keys.Left))
+            if (player.Health > 0 && player.bulletCount > 0)
             {
-                shooting = false;
-                if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                if (currentKeyboardState.IsKeyDown(Keys.Left))
                 {
-                // Reset our current time
-                previousFireTime = gameTime.TotalGameTime;
-                shooting = true;
-                // Add the projectile, but add it to the front and center of the player
-                AddBulletsBackward(player.Position + new Vector2(-35, -37));
-                shootingSound.Play();
+                    shooting = false;
+                    if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                    {
+                        // Reset our current time
+                        previousFireTime = gameTime.TotalGameTime;
+                        shooting = true;
+                        // Add the projectile, but add it to the front and center of the player
+                        AddBulletsBackward(player.Position + new Vector2(-35, -37));
+                        shootingSound.Play();
+                        player.bulletCount -= 1;
+                    }
                 }
-            }
 
-            if (currentKeyboardState.IsKeyDown(Keys.Right))
-            {
-                shooting = false;
-                if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                if (currentKeyboardState.IsKeyDown(Keys.Right))
                 {
-                    // Reset our current time
-                    previousFireTime = gameTime.TotalGameTime;
-                    shooting = true;
-                    // Add the projectile, but add it to the front and center of the player
-                    AddBulletsForward(player.Position + new Vector2(50, -37));
-                    shootingSound.Play();
+                    shooting = false;
+                    if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                    {
+                        // Reset our current time
+                        previousFireTime = gameTime.TotalGameTime;
+                        shooting = true;
+                        // Add the projectile, but add it to the front and center of the player
+                        AddBulletsForward(player.Position + new Vector2(50, -37));
+                        shootingSound.Play();
+                        player.bulletCount -= 1;
+                    }
                 }
             }
             
@@ -334,6 +378,8 @@ namespace ThugLife
 
                     // Add an Enemy
                     AddPolice();
+                    policeSpawn.Play();
+                    policeSiren.Play();
                 }
             }
             
@@ -341,7 +387,7 @@ namespace ThugLife
             // Update the Enemies
             for (int i = police.Count - 1; i >= 0; i--)
             {
-                if (police[i].Position.X > player.Position.X + player.Width) //ja cop ir priekðâ player
+                if (police[i].Position.X > player.Position.X + player.Width - 5) //ja cop ir priekðâ player
                 {
                     police[i].MoveSpeed = -1; //cop iet uz atpakaïu
 
@@ -361,9 +407,17 @@ namespace ThugLife
                     if (police[i].Health <= 0)
                     {
                         explosionSound.Play();
+                        //Add to the player's score
+                        player.score += police[i].Value;
+                        AddExplosion(police[i].Position);
+                        AddExplosion(police[i].Position + new Vector2(60, 0));
+                        AddExplosion(police[i].Position + new Vector2(-60, 0));
+                        AddExplosion(police[i].Position + new Vector2(0, -20));
+                        player.bulletCount += 10;
                     }
                     police.RemoveAt(i);
                 }
+                
             }
         }
 
@@ -413,6 +467,15 @@ namespace ThugLife
 
                 if (cars[i].Active == false)
                 {
+                    if (cars[i].Health <= 0)
+                    {
+                        explosionSound.Play();
+                        player.score -= 50;
+                        AddExplosion(cars[i].Position);
+                        AddExplosion(cars[i].Position + new Vector2(60, 0));
+                        AddExplosion(cars[i].Position + new Vector2(-60, 0));
+                        AddExplosion(cars[i].Position + new Vector2(0, -20));
+                    }
                     cars.RemoveAt(i);
                 }
             }
@@ -487,6 +550,7 @@ namespace ThugLife
                     //car vs player
                     if (rectangleCar.Intersects(rectanglePlayer))
                     {
+                        player.Health -= cars[j].Damage;
                         if (player.Position.Y >= cars[j].Position.Y) // ja player ir zemak par car
                         {
                             if (cars[j].Position.Y > 350) //car nav parak augstu
@@ -616,7 +680,7 @@ namespace ThugLife
                         if (rectangleBullet.Intersects(rectangleCar))
                         {
                             cars[k].Health -= bullets[i].Damage;
-                            cars[k].carMoveSpeed = 10;
+                            cars[k].carMoveSpeed = 12;
                             if (!cars[k].shot)
                             {
                                 tireScreetchSound.Play();
@@ -665,6 +729,26 @@ namespace ThugLife
             }
         }
 
+        // Explosions
+        private void AddExplosion(Vector2 position)
+        {
+            Animation explosion = new Animation();
+            explosion.Initialize(explosionTexture, position, 134, 134, 12, 45, Color.White, 1f, false);
+            explosions.Add(explosion);
+        }
+
+        private void UpdateExplosions(GameTime gameTime)
+        {
+            for (int i = explosions.Count - 1; i >= 0; i--)
+            {
+                explosions[i].Update(gameTime);
+                if (explosions[i].Active == false)
+                {
+                    explosions.RemoveAt(i);
+                }
+            }
+        }
+
         private void DrawGangsta(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(thugTexture, player.Position, null, Color.White, 0f, new Vector2(thugTexture.Width / 2 + 10, thugTexture.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
@@ -680,6 +764,11 @@ namespace ThugLife
         private void DrawGunshotForward(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(gunshotTexture, player.Position, null, Color.White, 0f, new Vector2(gunshotTexture.Width / 2 - 73, gunshotTexture.Height / 2 + 37), 1f, SpriteEffects.None, 0f);
+        }
+
+        private void DrawGameOver(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(gameOver, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
         }
 
 
@@ -698,6 +787,33 @@ namespace ThugLife
             catch { }
         }
 
+        private void StopMusic(Song song)
+        {
+            // Due to the way the MediaPlayer plays music,
+            // we have to catch the exception. Music will play when the game is not tethered
+            try
+            {
+                // Play the music
+                MediaPlayer.Stop();
+            }
+            catch { }
+        }
+
+        //Save score in DB
+        private void SaveScore(Player player, int score)
+        {
+            busted = false;
+            ThugLifeDBEntities4 db = new ThugLifeDBEntities4();
+
+            Score newScore = new Score();
+            newScore.ID_Player = player.ID_Player;
+            newScore.GameScore = score;
+
+            db.Score.AddObject(newScore);
+            db.SaveChanges();
+            
+        }
+
 
         //
         protected override void Draw(GameTime gameTime)
@@ -706,52 +822,87 @@ namespace ThugLife
 
             spriteBatch.Begin(); // Start drawing
 
-            spriteBatch.Draw(skies, Vector2.Zero, Color.White);
+            if (player.Health > 0)
+            {
+                spriteBatch.Draw(skies, Vector2.Zero, Color.White);
 
-            // Draw the moving background
-            skiesLayer1.Draw(spriteBatch);
-            skiesLayer2.Draw(spriteBatch);
-            buildings.Draw(spriteBatch);
-            road.Draw(spriteBatch);
-            ground.Draw(spriteBatch);
+                // Draw the moving background
+                skiesLayer1.Draw(spriteBatch);
+                skiesLayer2.Draw(spriteBatch);
+                buildings.Draw(spriteBatch);
+                road.Draw(spriteBatch);
+                ground.Draw(spriteBatch);
+
+
+                //Draw police
+                // Draw the Enemies
+                for (int i = 0; i < police.Count; i++)
+                {
+                    police[i].Draw(spriteBatch);
+
+                }
+
+                for (int i = 0; i < cars.Count; i++)
+                {
+                    cars[i].Draw(spriteBatch);
+
+                }
+                player.Draw(spriteBatch);
+                // Draw the bullets
+                for (int i = 0; i < bullets.Count; i++)
+                {
+                    bullets[i].Draw(spriteBatch);
+                }
+                // Draw the Player
+
+                if (currentKeyboardState.IsKeyDown(Keys.Left))
+                {
+                    DrawGangsta(spriteBatch);
+                    if (shooting) DrawGunshotBackward(spriteBatch);
+                }
+                if (currentKeyboardState.IsKeyDown(Keys.Right))
+                {
+                    DrawGangstaForward(spriteBatch);
+                    if (shooting) DrawGunshotForward(spriteBatch);
+                }
+
+                for (int i = 0; i < explosions.Count; i++)
+                {
+                    explosions[i].Draw(spriteBatch);
+                }
+
+                barrier.Draw(spriteBatch);
+
+                // Draw the score
+                spriteBatch.DrawString(font, "Score: " + player.score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+                // Draw the player health
+                spriteBatch.DrawString(font, "Health: " + player.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
+                spriteBatch.DrawString(font, "Bullets: " + player.bulletCount, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 60), Color.White);
+                spriteBatch.DrawString(font, "Name: " + newPlayer.Username.Trim(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X+200, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            }
+            if (player.Health <= 0)
+            {
+                DrawGameOver(spriteBatch);
+                spriteBatch.DrawString(font, "Score: " + player.score, new Vector2(gameOver.Width / 2 - 100,gameOver.Height / 2), Color.Red);
+                spriteBatch.DrawString(font, "Press space to play again", new Vector2(gameOver.Width / 2 - 200, gameOver.Height / 2 + 30), Color.White);
+                busted = false;
+                if (currentKeyboardState.IsKeyDown(Keys.Space))
+                {
+                    SaveScore(newPlayer, player.score);
+                    player.Health = 100;
+                    player.score = 0;
+                    player.bulletCount = 50;
+                    police.Clear();
+                    cars.Clear();
+                    bullets.Clear();
+                }
+            }
             
-            
-            //Draw police
-            // Draw the Enemies
-            for (int i = 0; i < police.Count; i++)
-            {
-                police[i].Draw(spriteBatch);
-
-            }
-
-            for (int i = 0; i < cars.Count; i++)
-            {
-                cars[i].Draw(spriteBatch);
-
-            }
-            player.Draw(spriteBatch);
-            // Draw the bullets
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                bullets[i].Draw(spriteBatch);
-            }
-            // Draw the Player
-            
-            if (currentKeyboardState.IsKeyDown(Keys.Left))
-            {
-                DrawGangsta(spriteBatch);
-                if (shooting) DrawGunshotBackward(spriteBatch);
-            }
-            if (currentKeyboardState.IsKeyDown(Keys.Right))
-            {
-                DrawGangstaForward(spriteBatch);
-                if (shooting) DrawGunshotForward(spriteBatch);
-            }
-
-            barrier.Draw(spriteBatch);
             spriteBatch.End(); // Stop drawing
-
             base.Draw(gameTime);
+
+            
+
         }
     }
 }

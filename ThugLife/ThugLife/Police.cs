@@ -57,10 +57,10 @@ namespace ThugLife
 
 
             // Set the health of the enemy
-            Health = 10;
+            Health = 100;
 
             // Set the amount of damage the enemy can do
-            Damage = 10;
+            Damage = 1;
 
             // Set how fast the enemy moves
             MoveSpeed = 3f;

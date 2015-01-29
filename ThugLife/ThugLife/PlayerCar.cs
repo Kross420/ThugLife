@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ThugLife
 {
-    class Player
+    class PlayerCar
     {
 
         // Animation representing the player
@@ -15,6 +15,8 @@ namespace ThugLife
         public Vector2 Position; // pozīcija
         public bool Active; // stāvoklis
         public int Health; // dzīvības
+        public int score = 0;
+        public int bulletCount;
         // iegūst bildes izmērus
         public int Width
         {
@@ -33,6 +35,7 @@ namespace ThugLife
             Position = position;
             Active = true;
             Health = 100;
+            bulletCount = 50;
         }
 
         // Update the player animation
