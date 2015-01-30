@@ -82,6 +82,7 @@ namespace ThugLife
         SoundEffect tireScreetchSound;
         SoundEffect policeSpawn;
         SoundEffect policeSiren;
+        SoundEffect gameover;
 
         // The music played during gameplay
         Song gameplayMusic;
@@ -198,13 +199,14 @@ namespace ThugLife
 
             //Sound
             // Load the music
-            //gameplayMusic = Content.Load<Song>("sound/gameMusic");
+            gameplayMusic = Content.Load<Song>("sound/gameplaymusic2");
             //engine = Content.Load<Song>("sound/driving");
 
             // Load the laser and explosion sound effect
             shootingSound = Content.Load<SoundEffect>("sound/gunshot");
             explosionSound = Content.Load<SoundEffect>("sound/explosion");
             tireScreetchSound = Content.Load<SoundEffect>("sound/screetch");
+            gameover = Content.Load<SoundEffect>("sound/gameover");
 
             policeSpawn = Content.Load<SoundEffect>("sound/policeSiren");
             policeSiren = Content.Load<SoundEffect>("sound/policeSiren2");
@@ -220,6 +222,7 @@ namespace ThugLife
 
             // Start the music right away
             PlayMusic(engine);
+            PlayMusic(gameplayMusic);
 
         }
 
@@ -535,7 +538,10 @@ namespace ThugLife
 
 
                     if (player.Health <= 0)
+                    {
                         player.Active = false;
+                        gameover.Play();
+                    }
                 }
 
 
@@ -882,6 +888,7 @@ namespace ThugLife
             }
             if (player.Health <= 0)
             {
+                StopMusic(gameplayMusic);
                 DrawGameOver(spriteBatch);
                 spriteBatch.DrawString(font, "Score: " + player.score, new Vector2(gameOver.Width / 2 - 100,gameOver.Height / 2), Color.Red);
                 spriteBatch.DrawString(font, "Press space to play again", new Vector2(gameOver.Width / 2 - 200, gameOver.Height / 2 + 30), Color.White);
