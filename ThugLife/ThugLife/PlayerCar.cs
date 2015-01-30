@@ -9,14 +9,13 @@ namespace ThugLife
 {
     class PlayerCar
     {
-
-        // Animation representing the player
         public Animation PlayerAnimation; //Spēlētāja bilde
         public Vector2 Position; // pozīcija
         public bool Active; // stāvoklis
         public int Health; // dzīvības
-        public int score = 0;
-        public int bulletCount;
+        public int score; //punkti
+        public int bulletCount; //ložu skaits
+
         // iegūst bildes izmērus
         public int Width
         {
@@ -36,15 +35,17 @@ namespace ThugLife
             Active = true;
             Health = 100;
             bulletCount = 50;
+            score = 0;
         }
 
-        // Update the player animation
+        //atjauno player animācijas pozīciju
         public void Update(GameTime gameTime)
         {
             PlayerAnimation.Position = Position;
             PlayerAnimation.Update(gameTime);
         }
 
+        //zīmē player animāciju
         public void Draw(SpriteBatch spriteBatch)
         {
             PlayerAnimation.Draw(spriteBatch);

@@ -17,7 +17,6 @@ namespace ThugLife
         public XNASignIn()
         {
             InitializeComponent();
-
         }
 
         protected override void OnShown(EventArgs e)
@@ -40,7 +39,7 @@ namespace ThugLife
         {
             ResultSet = true;
 
-            ThugLifeDBEntities4 db = new ThugLifeDBEntities4();
+            ThugLifeDBEntities5 db = new ThugLifeDBEntities5();
 
             var vaic = from player in db.Player
                        where player.Username == this.inputUsername.Text
@@ -92,9 +91,9 @@ namespace ThugLife
             this.panelButtons.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // panelButtons
-            //
+            // 
             this.panelButtons.Controls.Add(this.btnOK);
             this.panelButtons.Controls.Add(this.btnCancel);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -103,9 +102,9 @@ namespace ThugLife
             this.panelButtons.Padding = new System.Windows.Forms.Padding(5);
             this.panelButtons.Size = new System.Drawing.Size(384, 36);
             this.panelButtons.TabIndex = 4;
-            //
+            // 
             // btnOK
-            //
+            // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnOK.Location = new System.Drawing.Point(229, 5);
@@ -115,9 +114,9 @@ namespace ThugLife
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            //
+            // 
             // btnCancel
-            //
+            // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnCancel.Location = new System.Drawing.Point(304, 5);
@@ -127,9 +126,9 @@ namespace ThugLife
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            //
+            // 
             // panel1
-            //
+            // 
             this.panel1.Controls.Add(this.inputPassword);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.inputUsername);
@@ -140,18 +139,18 @@ namespace ThugLife
             this.panel1.Padding = new System.Windows.Forms.Padding(10);
             this.panel1.Size = new System.Drawing.Size(384, 106);
             this.panel1.TabIndex = 5;
-            //
+            // 
             // inputPassword
-            //
+            // 
             this.inputPassword.Dock = System.Windows.Forms.DockStyle.Top;
             this.inputPassword.Location = new System.Drawing.Point(10, 76);
             this.inputPassword.Name = "inputPassword";
             this.inputPassword.PasswordChar = '*';
             this.inputPassword.Size = new System.Drawing.Size(364, 20);
             this.inputPassword.TabIndex = 7;
-            //
+            // 
             // label2
-            //
+            // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Top;
             this.label2.Location = new System.Drawing.Point(10, 53);
@@ -160,17 +159,17 @@ namespace ThugLife
             this.label2.Size = new System.Drawing.Size(53, 23);
             this.label2.TabIndex = 6;
             this.label2.Text = "Password";
-            //
+            // 
             // inputUsername
-            //
+            // 
             this.inputUsername.Dock = System.Windows.Forms.DockStyle.Top;
             this.inputUsername.Location = new System.Drawing.Point(10, 33);
             this.inputUsername.Name = "inputUsername";
             this.inputUsername.Size = new System.Drawing.Size(364, 20);
             this.inputUsername.TabIndex = 5;
-            //
+            // 
             // label1
-            //
+            // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Location = new System.Drawing.Point(10, 10);
@@ -179,9 +178,9 @@ namespace ThugLife
             this.label1.Size = new System.Drawing.Size(55, 23);
             this.label1.TabIndex = 4;
             this.label1.Text = "Username";
-            //
+            // 
             // XNASignIn
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 142);
@@ -190,7 +189,7 @@ namespace ThugLife
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ThugLife";
+            this.Name = "XNASignIn";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ThugLife";
             this.panelButtons.ResumeLayout(false);

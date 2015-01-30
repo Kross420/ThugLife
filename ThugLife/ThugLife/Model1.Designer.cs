@@ -24,32 +24,32 @@ namespace ThugLife
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
-    public partial class ThugLifeDBEntities4 : ObjectContext
+    public partial class ThugLifeDBEntities5 : ObjectContext
     {
         #region Constructors
     
         /// <summary>
-        /// Initializes a new ThugLifeDBEntities4 object using the connection string found in the 'ThugLifeDBEntities4' section of the application configuration file.
+        /// Initializes a new ThugLifeDBEntities5 object using the connection string found in the 'ThugLifeDBEntities5' section of the application configuration file.
         /// </summary>
-        public ThugLifeDBEntities4() : base("name=ThugLifeDBEntities4", "ThugLifeDBEntities4")
+        public ThugLifeDBEntities5() : base("name=ThugLifeDBEntities5", "ThugLifeDBEntities5")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
     
         /// <summary>
-        /// Initialize a new ThugLifeDBEntities4 object.
+        /// Initialize a new ThugLifeDBEntities5 object.
         /// </summary>
-        public ThugLifeDBEntities4(string connectionString) : base(connectionString, "ThugLifeDBEntities4")
+        public ThugLifeDBEntities5(string connectionString) : base(connectionString, "ThugLifeDBEntities5")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
     
         /// <summary>
-        /// Initialize a new ThugLifeDBEntities4 object.
+        /// Initialize a new ThugLifeDBEntities5 object.
         /// </summary>
-        public ThugLifeDBEntities4(EntityConnection connection) : base(connection, "ThugLifeDBEntities4")
+        public ThugLifeDBEntities5(EntityConnection connection) : base(connection, "ThugLifeDBEntities5")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
@@ -182,54 +182,6 @@ namespace ThugLife
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public global::System.String Name
-        {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                OnNameChanging(value);
-                ReportPropertyChanging("Name");
-                _Name = StructuralObject.SetValidValue(value, true);
-                ReportPropertyChanged("Name");
-                OnNameChanged();
-            }
-        }
-        private global::System.String _Name;
-        partial void OnNameChanging(global::System.String value);
-        partial void OnNameChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public global::System.String Surname
-        {
-            get
-            {
-                return _Surname;
-            }
-            set
-            {
-                OnSurnameChanging(value);
-                ReportPropertyChanging("Surname");
-                _Surname = StructuralObject.SetValidValue(value, true);
-                ReportPropertyChanged("Surname");
-                OnSurnameChanged();
-            }
-        }
-        private global::System.String _Surname;
-        partial void OnSurnameChanging(global::System.String value);
-        partial void OnSurnameChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
         public global::System.String Username
         {
             get
@@ -272,6 +224,54 @@ namespace ThugLife
         private global::System.String _Password;
         partial void OnPasswordChanging(global::System.String value);
         partial void OnPasswordChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                OnNameChanging(value);
+                ReportPropertyChanging("Name");
+                _Name = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Name");
+                OnNameChanged();
+            }
+        }
+        private global::System.String _Name;
+        partial void OnNameChanging(global::System.String value);
+        partial void OnNameChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Surname
+        {
+            get
+            {
+                return _Surname;
+            }
+            set
+            {
+                OnSurnameChanging(value);
+                ReportPropertyChanging("Surname");
+                _Surname = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Surname");
+                OnSurnameChanged();
+            }
+        }
+        private global::System.String _Surname;
+        partial void OnSurnameChanging(global::System.String value);
+        partial void OnSurnameChanged();
     
         /// <summary>
         /// No Metadata Documentation available.

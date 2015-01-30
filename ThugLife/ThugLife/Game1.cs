@@ -15,8 +15,8 @@ namespace ThugLife
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
-        PlayerCar player;
+        PlayerCar player; //spçlçtâja maðîna
+        Player newPlayer; //spçlçtâjs
 
         // Keyboard states used to determine key presses
         KeyboardState currentKeyboardState;
@@ -26,20 +26,20 @@ namespace ThugLife
         GamePadState currentGamePadState;
         GamePadState previousGamePadState;
 
-        // A movement speed for the player
-        float playerMoveSpeed;
+        float playerMoveSpeed; //spçlçtâja kustîbas âtrums
         bool busted = false;
+   
+        Texture2D skies; // statiskas debesis
 
-        // Image used to display the static background
-        Texture2D skies;
-
-        // Parallaxing Layers
+        // fona slâòi
         ParallaxingBackground skiesLayer1;
         ParallaxingBackground skiesLayer2;
         ParallaxingBackground ground;
         ParallaxingBackground buildings;
         ParallaxingBackground road;
         ParallaxingBackground barrier;
+
+        Random random; // random skaitïa ìenerators
 
         // Police
         Texture2D policeTexture;
@@ -50,58 +50,48 @@ namespace ThugLife
         Texture2D carTexture2;
         List<Car> cars;
 
-        // The rate at which the police appear
+        // policijas parâdîðanâs bieþums
         TimeSpan policeSpawnTime;
         TimeSpan policePreviousSpawnTime;
-        // A random number generator
-        Random random;
 
-        // The rate at which the cars appear
+        // parasto maðînu parâdîðanâs bieþums
         TimeSpan carsSpawnTime;
         TimeSpan carsPreviousSpawnTime;
 
-        //Bullets
+        // lodes
         Texture2D bulletTexture;
         List<Bullets> bullets;
         bool shooting;
         Texture2D gunshotTexture;
 
-        // Thug
+        // ðavçja bildes
         Texture2D thugTexture;
         Texture2D thugTextureForward;
 
-        // The rate of fire of the player laser
+        // loþu ðauðanas âtrums
         TimeSpan fireTime;
         TimeSpan previousFireTime;
 
-        // The sound that is played when a laser is fired
-        SoundEffect shootingSound;
+        //beigu ekrâns
+        Texture2D gameOver;
 
-        // The sound used when the player or an enemy dies
+        // skaòas
+        SoundEffect shootingSound;
         SoundEffect explosionSound;
         SoundEffect tireScreetchSound;
         SoundEffect policeSpawn;
         SoundEffect policeSiren;
         SoundEffect gameover;
 
-        // The music played during gameplay
+        // mûzika un motora skaòa
         Song gameplayMusic;
         Song engine;
 
-        //Explosion
+        // sprâdzieni
         Texture2D explosionTexture;
         List<Animation> explosions;
 
-        // The font used to display UI elements
-        SpriteFont font;
-
-        // Game over screen
-        Texture2D gameOver;
-
-        Player newPlayer;
-
-
-        
+        SpriteFont font; //  UI elementu fonts
 
         public Game1(Player newPlayer)
         {
@@ -113,7 +103,7 @@ namespace ThugLife
             Content.RootDirectory = "Content";
         }
 
-        //
+        //uzstâda sâkuma vçrtîbas
         protected override void Initialize()
         {
             player = new PlayerCar();
@@ -126,53 +116,40 @@ namespace ThugLife
             road = new ParallaxingBackground();
             barrier = new ParallaxingBackground();
 
-            // Initialize the police list
-            police = new List<Police>();
+            random = new Random(); //random inicializâcija
 
-            // Set the time keepers to zero
-            policePreviousSpawnTime = TimeSpan.Zero;
+            police = new List<Police>(); // inicializç policijas maðînu sarakstu
+            policePreviousSpawnTime = TimeSpan.Zero; // pçdçjâs policijas masînas parâdîðanâs laiks = 0
+            policeSpawnTime = TimeSpan.FromSeconds(5.0f); //policijas masînas parâdîðanâs bieþums
 
-            // Used to determine how fast enemy respawns
-            policeSpawnTime = TimeSpan.FromSeconds(5.0f);
+            cars = new List<Car>(); //inicializç parasto maðînu sarakstu
+            carsPreviousSpawnTime = TimeSpan.Zero; // pçdçjâs masînas parâdîðanâs laiks = 0
+            carsSpawnTime = TimeSpan.FromSeconds(8.0f); // masînas parâdîðanâs bieþums
 
-            // Initialize our random number generator
-            random = new Random();
-
-            // Initialize the enemies list
-            cars = new List<Car>();
-
-            // Set the time keepers to zero
-            carsPreviousSpawnTime = TimeSpan.Zero;
-
-            // Used to determine how fast enemy respawns
-            carsSpawnTime = TimeSpan.FromSeconds(8.0f);
-
-            //Bullets
+            //lodes 
             bullets = new List<Bullets>();
+            fireTime = TimeSpan.FromSeconds(.5f); //bieþums
 
-            // Set the laser to fire every quarter second
-            fireTime = TimeSpan.FromSeconds(.5f);
-
-            //explosion
+            //sprâdzieni
             explosions = new List<Animation>();
 
             base.Initialize();
         }
 
-        //
+        //ielâdç komponentes
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            //player
             Animation playerAnimation = new Animation();
             Texture2D playerTexture = Content.Load<Texture2D>("playercar");
             playerAnimation.Initialize(playerTexture, Vector2.Zero, 331, 99, 4, 30, Color.White, 1f, true);
+            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y+ GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 
-            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y
-            + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
             player.Initialize(playerAnimation, playerPosition);
 
-            // Load the parallaxing background
+            //fona slâòi
             skiesLayer1.Initialize(Content, "bg2", GraphicsDevice.Viewport.Width, -1);
             skiesLayer2.Initialize(Content, "bg3", GraphicsDevice.Viewport.Width, -1);
             ground.Initialize(Content, "ground", GraphicsDevice.Viewport.Width, -16);
@@ -180,6 +157,7 @@ namespace ThugLife
             road.Initialize(Content, "road", GraphicsDevice.Viewport.Width, -16);
             barrier.Initialize(Content, "barrier", GraphicsDevice.Viewport.Width, -16);
 
+            //statiskâs debesis
             skies = Content.Load<Texture2D>("bg1");
 
             //Police
@@ -189,54 +167,44 @@ namespace ThugLife
             carTexture = Content.Load<Texture2D>("car1");
             carTexture2 = Content.Load<Texture2D>("car2");
 
-            //Bullets
+            //lodes
             bulletTexture = Content.Load<Texture2D>("bullet");
             gunshotTexture = Content.Load<Texture2D>("gunshot");
 
-            //Thug
+            //ðâvçjs
             thugTexture = Content.Load<Texture2D>("gangsta");
             thugTextureForward = Content.Load<Texture2D>("gangstaForward");
 
-            //Sound
-            // Load the music
+            //mûzika
             gameplayMusic = Content.Load<Song>("sound/gameplaymusic2");
             //engine = Content.Load<Song>("sound/driving");
 
-            // Load the laser and explosion sound effect
+            ///skaòas 
             shootingSound = Content.Load<SoundEffect>("sound/gunshot");
             explosionSound = Content.Load<SoundEffect>("sound/explosion");
             tireScreetchSound = Content.Load<SoundEffect>("sound/screetch");
             gameover = Content.Load<SoundEffect>("sound/gameover");
-
             policeSpawn = Content.Load<SoundEffect>("sound/policeSiren");
             policeSiren = Content.Load<SoundEffect>("sound/policeSiren2");
-
-            // Explosion
             explosionTexture = Content.Load<Texture2D>("explosion_anim");
-
-            // Load the score font
             font = Content.Load<SpriteFont>("gameFont");
-
-            // Game over screen
             gameOver = Content.Load<Texture2D>("gameOver");
 
-            // Start the music right away
+            // mûzika sâk skançt uzreiz
             PlayMusic(engine);
             PlayMusic(gameplayMusic);
 
         }
 
-        //
+        //nav pielietots
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        //
+        //atjauno spçles komponeðu parametrus
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
 
             // Save the previous state of the keyboard and game pad so we can determinesingle key/button presses
             previousGamePadState = currentGamePadState;
@@ -247,40 +215,29 @@ namespace ThugLife
             currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
 
-            if (player.Health > 0)
+            if (player.Health > 0) //kamçr spçlçtâjs ir aktîvs
             {
-                //Update the player
-                UpdatePlayer(gameTime);
+                UpdatePlayer(gameTime); //spçlçtâjs
 
-                skiesLayer1.Update();
-                skiesLayer2.Update();
+                //fona slâòi
+                skiesLayer1.Update(); 
                 ground.Update();
                 buildings.Update();
                 road.Update();
                 barrier.Update();
 
-                //Update police
-                UpdatePolice(gameTime);
-
-                //Update cars
+                UpdatePolice(gameTime); 
                 UpdateCars(gameTime);
-
-                UpdateCollision();
-
-                //Update bullets
-                UpdateBullets();
-
-                // Explosions
                 UpdateExplosions(gameTime);
+                UpdateBullets();
+                UpdateCollision(); 
             }
-
             base.Update(gameTime);
         }
 
-        //
+        //atjauno player parametrus atkarîbâ no nospiestajâm pogâm
         private void UpdatePlayer(GameTime gameTime)
         {
-
             player.Update(gameTime);
 
             // Use the Keyboard / Dpad
@@ -305,24 +262,23 @@ namespace ThugLife
                 player.Position.Y += playerMoveSpeed;
             }
 
-            
-
-            // Make sure that the player does not go out of bounds
+            // lai spçlçtâjs nevarçtu ibraukt ârpus ceïa
             player.Position.X = MathHelper.Clamp(player.Position.X, player.Width / 2, GraphicsDevice.Viewport.Width - player.Width / 2);
             player.Position.Y = MathHelper.Clamp(player.Position.Y, 340, 605);
 
-            // Fire only every interval we set as the fireTime
-            if (player.Health > 0 && player.bulletCount > 0)
+
+            if (player.Health > 0 && player.bulletCount > 0) // ja spçlçtâjam ir hp un lodes
             {
                 if (currentKeyboardState.IsKeyDown(Keys.Left))
                 {
                     shooting = false;
-                    if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                    if (gameTime.TotalGameTime - previousFireTime > fireTime) //ja pagâjis ðauðanas bieþuma laiks
                     {
-                        // Reset our current time
+                        // uzliek pçdçjo ðauðanas laiku, kad izðauj
                         previousFireTime = gameTime.TotalGameTime;
-                        shooting = true;
-                        // Add the projectile, but add it to the front and center of the player
+                        shooting = true; //tiek ðauts
+
+                        // izveido lodi, kas lido uz atpakaïu
                         AddBulletsBackward(player.Position + new Vector2(-35, -37));
                         shootingSound.Play();
                         player.bulletCount -= 1;
@@ -334,10 +290,11 @@ namespace ThugLife
                     shooting = false;
                     if (gameTime.TotalGameTime - previousFireTime > fireTime)
                     {
-                        // Reset our current time
+                        // uzliek pçdçjo ðauðanas laiku, kad izðauj
                         previousFireTime = gameTime.TotalGameTime;
                         shooting = true;
-                        // Add the projectile, but add it to the front and center of the player
+
+                        // izveido lodi, kas lido uz priekðu
                         AddBulletsForward(player.Position + new Vector2(50, -37));
                         shootingSound.Play();
                         player.bulletCount -= 1;
@@ -347,47 +304,38 @@ namespace ThugLife
             
         }
 
-        // Update police
+        // izveido policijas maðînu
         private void AddPolice()
         {
-            // Create the animation object
             Animation policeAnimation = new Animation();
-
-            // Initialize the animation with the correct animation information
             policeAnimation.Initialize(policeTexture, Vector2.Zero, 336, 119, 3, 30, Color.White, 1f, true);
 
-            // Randomly generate the position of the enemy
+            //random pozîcijas ìenerçðana
             Vector2 position = new Vector2(-policeTexture.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
 
-            // Create an enemy
             Police policeCar = new Police();
-
-            // Initialize the enemy
             policeCar.Initialize(policeAnimation, position);
 
-            // Add the enemy to the active enemies list
             police.Add(policeCar);
         }
 
         //Update police
         private void UpdatePolice(GameTime gameTime)
         {
-            // Spawn a new enemy enemy every 1.5 seconds
-            if (police.Count < 3)
+            if (police.Count < 3) // ja esoðâs policijas maðînas nav vairâk kâ 3
             {
                 if (gameTime.TotalGameTime - policePreviousSpawnTime > policeSpawnTime)
                 {
                     policePreviousSpawnTime = gameTime.TotalGameTime;
 
-                    // Add an Enemy
-                    AddPolice();
-                    policeSpawn.Play();
-                    policeSiren.Play();
+                    AddPolice(); // pievieno policijas maðînu
+                    policeSpawn.Play(); //atskaòo sirçnas
+                    policeSiren.Play(); //atskaòo sirçnas
                 }
             }
             
 
-            // Update the Enemies
+            // polocista maðînas braukðanas AI
             for (int i = police.Count - 1; i >= 0; i--)
             {
                 if (police[i].Position.X > player.Position.X + player.Width - 5) //ja cop ir priekðâ player
@@ -405,12 +353,11 @@ namespace ThugLife
 
                 police[i].Update(gameTime);
 
-                if (police[i].Active == false)
+                if (police[i].Active == false) //ja policijas maðîna ir neaktîva
                 {
                     if (police[i].Health <= 0)
                     {
                         explosionSound.Play();
-                        //Add to the player's score
                         player.score += police[i].Value;
                         AddExplosion(police[i].Position);
                         AddExplosion(police[i].Position + new Vector2(60, 0));
@@ -424,46 +371,40 @@ namespace ThugLife
             }
         }
 
-        // Update police
+        // izveido parasto maðînu
         private void AddCars()
         {
-            // Create the animation object
+            //2 veidu maðînas
             Animation carsAnimation = new Animation();
             Animation carsAnimation2 = new Animation();
 
-            // Initialize the animation with the correct animation information
             carsAnimation.Initialize(carTexture, Vector2.Zero, 297, 103, 3, 30, Color.White, 1f, true);
             carsAnimation2.Initialize(carTexture2, Vector2.Zero, 341, 119, 3, 30, Color.White, 1f, true);
 
-            // Randomly generate the position of the enemy
+            // random pozîcijas ìenerçðana
             Vector2 position = new Vector2(GraphicsDevice.Viewport.Width + carTexture.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
-            //Vector2 position2 = new Vector2(-carTexture2.Width / 2, random.Next(340, GraphicsDevice.Viewport.Height - 140));
 
-            // Create an enemy
             Car car = new Car();
 
-            // Initialize the enemy
+            // randomâ ìenerç vienu no 2 veidu maðînâm 50/50
             int sk = random.Next(1, 3);
             if (sk == 1) car.Initialize(carsAnimation, position);
             else car.Initialize(carsAnimation2, position);
             
-
-            // Add the enemy to the active enemies list
             cars.Add(car);
         }
 
+
+        //update cars
         private void UpdateCars(GameTime gameTime)
         {
-            // Spawn a new enemy enemy every 1.5 seconds
+            // ìenerç pçc laika
             if (gameTime.TotalGameTime - carsPreviousSpawnTime > carsSpawnTime)
             {
                 carsPreviousSpawnTime = gameTime.TotalGameTime;
-
-                // Add a Car
                 AddCars();
             }
 
-            // Update the Enemies
             for (int i = cars.Count - 1; i >= 0; i--)
             {
                 cars[i].Update(gameTime);
@@ -486,15 +427,15 @@ namespace ThugLife
 
         private void UpdateCollision()
         {
-            // Use the Rectangle's built-in intersect function to 
-            // determine if two objects are overlapping
+
+            //objektu râmji
             Rectangle rectanglePlayer;
             Rectangle rectanglePolice;
             Rectangle rectanglePolice2;
             Rectangle rectangleCar;
             Rectangle rectangleBullet;
 
-            // Only create the rectangle once for the player
+            //player râmis
             rectanglePlayer = new Rectangle((int)player.Position.X,
             (int)player.Position.Y+50,
             player.Width,
@@ -661,9 +602,8 @@ namespace ThugLife
                 {
                     for (int k = 0; k < cars.Count; k++)
                     {
-                        
 
-                        // Create the rectangles we need to determine if we collided with each other
+                        // lodes sadursmes
                         rectangleBullet = new Rectangle((int)bullets[i].Position.X -
                         bullets[i].Width / 2, (int)bullets[i].Position.Y -
                         bullets[i].Height / 2, bullets[i].Width, bullets[i].Height);
@@ -676,13 +616,14 @@ namespace ThugLife
                         cars[k].Width / 2, (int)cars[k].Position.Y -
                         cars[k].Height / 2, cars[k].Width, cars[k].Height);
 
-                        // Determine if the two objects collided with each other
+                        // lode vs cop
                         if (rectangleBullet.Intersects(rectanglePolice))
                         {
                             police[j].Health -= bullets[i].Damage;
                             bullets[i].Active = false;
                         }
 
+                        //lode vs car
                         if (rectangleBullet.Intersects(rectangleCar))
                         {
                             cars[k].Health -= bullets[i].Damage;
@@ -701,29 +642,26 @@ namespace ThugLife
             }
         }
 
-        //Add bullets backward
+        //Add uz atpakaïu
         private void AddBulletsBackward(Vector2 position)
         {
-            
             Bullets bullet = new Bullets();
             bullet.Initialize(GraphicsDevice.Viewport, bulletTexture, position);
             bullets.Add(bullet);
         }
 
-        //Add bullets forward
+        //Add uz priekðu
         private void AddBulletsForward(Vector2 position)
         {
-
             Bullets bullet = new Bullets();
             bullet.Initialize(GraphicsDevice.Viewport, bulletTexture, position);
             bullet.bulletMoveSpeed = -20f;
             bullets.Add(bullet);
         }
 
-        // Update bullets
+        // Update lodes
         private void UpdateBullets()
         {
-            // Update the Projectiles
             for (int i = bullets.Count - 1; i >= 0; i--)
             {
                 bullets[i].Update();
@@ -735,7 +673,7 @@ namespace ThugLife
             }
         }
 
-        // Explosions
+        // Add sprâdziens
         private void AddExplosion(Vector2 position)
         {
             Animation explosion = new Animation();
@@ -743,6 +681,7 @@ namespace ThugLife
             explosions.Add(explosion);
         }
 
+        //Update sprâdziens
         private void UpdateExplosions(GameTime gameTime)
         {
             for (int i = explosions.Count - 1; i >= 0; i--)
@@ -755,61 +694,58 @@ namespace ThugLife
             }
         }
 
+        //zîmç ðâvçju uz atpakaïu
         private void DrawGangsta(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(thugTexture, player.Position, null, Color.White, 0f, new Vector2(thugTexture.Width / 2 + 10, thugTexture.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
         }
+        //zîmç ðâvçju uz priekðu
         private void DrawGangstaForward(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(thugTextureForward, player.Position, null, Color.White, 0f, new Vector2(thugTextureForward.Width / 2 - 30, thugTextureForward.Height / 2 + 35), 1f, SpriteEffects.None, 0f);
         }
+        //zîmç ðâvçju uz atpakaïu
         private void DrawGunshotBackward(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(gunshotTexture, player.Position, null, Color.White, 0f, new Vector2(gunshotTexture.Width / 2 + 55, gunshotTexture.Height / 2 + 37), 1f, SpriteEffects.None, 0f);
         }
+        //zîmç ðâvçju uz priekðu
         private void DrawGunshotForward(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(gunshotTexture, player.Position, null, Color.White, 0f, new Vector2(gunshotTexture.Width / 2 - 73, gunshotTexture.Height / 2 + 37), 1f, SpriteEffects.None, 0f);
         }
-
+        //zîmç beigu ekrânu
         private void DrawGameOver(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(gameOver, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
         }
 
-
+        // atskaòo mûziku
         private void PlayMusic(Song song)
         {
-            // Due to the way the MediaPlayer plays music,
-            // we have to catch the exception. Music will play when the game is not tethered
             try
             {
-                // Play the music
                 MediaPlayer.Play(song);
-
-                // Loop the currently playing song
                 MediaPlayer.IsRepeating = true;
             }
             catch { }
         }
 
+        // pârstâj atskaòot mûziku
         private void StopMusic(Song song)
         {
-            // Due to the way the MediaPlayer plays music,
-            // we have to catch the exception. Music will play when the game is not tethered
             try
             {
-                // Play the music
                 MediaPlayer.Stop();
             }
             catch { }
         }
 
-        //Save score in DB
+        // Saglabâ reultâtu DB
         private void SaveScore(Player player, int score)
         {
             busted = false;
-            ThugLifeDBEntities4 db = new ThugLifeDBEntities4();
+            ThugLifeDBEntities5 db = new ThugLifeDBEntities5();
 
             Score newScore = new Score();
             newScore.ID_Player = player.ID_Player;
@@ -821,46 +757,47 @@ namespace ThugLife
         }
 
 
-        //
+        //Zîmç visu
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(); // Start drawing
+            spriteBatch.Begin(); // Sâk zîmçt
 
             if (player.Health > 0)
             {
                 spriteBatch.Draw(skies, Vector2.Zero, Color.White);
 
-                // Draw the moving background
+                // fona slâòi
                 skiesLayer1.Draw(spriteBatch);
                 skiesLayer2.Draw(spriteBatch);
                 buildings.Draw(spriteBatch);
                 road.Draw(spriteBatch);
                 ground.Draw(spriteBatch);
 
-
-                //Draw police
-                // Draw the Enemies
+                // policija
                 for (int i = 0; i < police.Count; i++)
                 {
                     police[i].Draw(spriteBatch);
 
                 }
 
+                // parastâs maðînas
                 for (int i = 0; i < cars.Count; i++)
                 {
                     cars[i].Draw(spriteBatch);
-
                 }
+
+                //player
                 player.Draw(spriteBatch);
-                // Draw the bullets
+                
+                //lodes
                 for (int i = 0; i < bullets.Count; i++)
                 {
                     bullets[i].Draw(spriteBatch);
                 }
-                // Draw the Player
 
+                // ðâvçjs un ðauðanas effekts
                 if (currentKeyboardState.IsKeyDown(Keys.Left))
                 {
                     DrawGangsta(spriteBatch);
@@ -872,27 +809,28 @@ namespace ThugLife
                     if (shooting) DrawGunshotForward(spriteBatch);
                 }
 
+                // sprâdzieni
                 for (int i = 0; i < explosions.Count; i++)
                 {
                     explosions[i].Draw(spriteBatch);
                 }
 
-                barrier.Draw(spriteBatch);
+                barrier.Draw(spriteBatch); //zîmç metâla barjeru priekðâ
 
-                // Draw the score
+                // spçles dati stûrî
                 spriteBatch.DrawString(font, "Score: " + player.score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
-                // Draw the player health
                 spriteBatch.DrawString(font, "Health: " + player.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
                 spriteBatch.DrawString(font, "Bullets: " + player.bulletCount, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 60), Color.White);
                 spriteBatch.DrawString(font, "Name: " + newPlayer.Username.Trim(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X+200, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
             }
-            if (player.Health <= 0)
+            if (player.Health <= 0) //ja spçlçtâja hp=0 zîmç beigu ekrânu
             {
                 StopMusic(gameplayMusic);
                 DrawGameOver(spriteBatch);
                 spriteBatch.DrawString(font, "Score: " + player.score, new Vector2(gameOver.Width / 2 - 100,gameOver.Height / 2), Color.Red);
                 spriteBatch.DrawString(font, "Press space to play again", new Vector2(gameOver.Width / 2 - 200, gameOver.Height / 2 + 30), Color.White);
                 busted = false;
+                //ja nospieþ SPACE atsâk spçli
                 if (currentKeyboardState.IsKeyDown(Keys.Space))
                 {
                     SaveScore(newPlayer, player.score);
@@ -905,11 +843,8 @@ namespace ThugLife
                 }
             }
             
-            spriteBatch.End(); // Stop drawing
+            spriteBatch.End(); //beidz zîmçt
             base.Draw(gameTime);
-
-            
-
         }
     }
 }

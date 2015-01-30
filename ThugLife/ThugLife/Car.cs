@@ -12,98 +12,57 @@ using Microsoft.Xna.Framework.Media;
 
 namespace ThugLife
 {
-    /// <summary>
-    /// This is a game component that implements IUpdateable.
-    /// </summary>
     class Car
     {
-        // Animation representing the enemy
-        public Animation CarAnimation;
+        public Animation CarAnimation; // parastâs maðînas animâcija
+        public Vector2 Position; // pozîcija
+        public bool Active; // stâvoklis
+        public int Health; // dzîvîbas
+        public int Damage;  // cik hp atòem sadursmçs
+        public int Value; // punktu skaits, cik tas iedos player
+        public float carMoveSpeed; // pârvietoðanâð âtrums
+        public bool shot; //vai ir ieðauts
 
-        // The position of the enemy ship relative to the top left corner of thescreen
-        public Vector2 Position;
-
-        // The state of the Enemy Ship
-        public bool Active;
-
-        // The hit points of the enemy, if this goes to zero the enemy dies
-        public int Health;
-
-        // The amount of damage the enemy inflicts on the player ship
-        public int Damage;
-
-        // The amount of score the enemy will give to the player
-        public int Value;
-
-        // Get the width of the enemy ship
+        // iegûst platumu
         public int Width
         {
             get { return CarAnimation.FrameWidth; }
         }
 
-        // Get the height of the enemy ship
+        // iegûst garumu
         public int Height
         {
             get { return CarAnimation.FrameHeight; }
         }
 
-        // The speed at which the enemy moves
-        public float carMoveSpeed;
-        public bool shot;
-
-
+        // sâkuma nosacîjumi pçc padotajâm vçrtîbâm
         public void Initialize(Animation animation, Vector2 position)
         {
-            // Load the enemy ship texture
             CarAnimation = animation;
-
-            // Set the position of the enemy
             Position = position;
-
-            // We initialize the enemy to be active so it will be update in the game
             Active = true;
-
-
-            // Set the health of the enemy
             Health = 80;
-
-            // Set the amount of damage the enemy can do
             Damage = 1;
-
-            // Set how fast the enemy moves
             carMoveSpeed = 2f;
-
-
-            // Set the score value of the enemy
             Value = 100;
-
             shot = false;
-
         }
 
         public void Update(GameTime gameTime)
         {
-            // The enemy always moves to the left so decrement it's xposition
-            Position.X -= carMoveSpeed;
+            Position.X -= carMoveSpeed; //kustâs pa kreisi
+            CarAnimation.Position = Position; //animâcijas pozîcija
+            CarAnimation.Update(gameTime); //atjauno animâciju
 
-            // Update the position of the Animation
-            CarAnimation.Position = Position;
-
-            // Update Animation
-            CarAnimation.Update(gameTime);
-
-            // If the enemy is past the screen or its health reaches 0 then deactivateit
-            if (Position.X < -Width || Health <= 0)
+            if (Position.X < -Width || Health <= 0) //ja pozîcija ir ârpus ekrâja, vai dzîvîbas ir 0
             {
-                // By setting the Active flag to false, the game will remove this objet fromthe
-                // active game list
-                Active = false;
+                Active = false; //paliek neaktîva
             }
         }
 
+        //zîmç
         public void Draw(SpriteBatch spriteBatch)
         {
-            // Draw the animation
             CarAnimation.Draw(spriteBatch);
         }
     }

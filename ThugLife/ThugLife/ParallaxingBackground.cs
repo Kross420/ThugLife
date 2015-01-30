@@ -1,4 +1,3 @@
-// ParallaxingBackground.cs
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -7,62 +6,43 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ThugLife
 {
-    /// <summary>
-    /// This is a game component that implements IUpdateable.
-    /// </summary>
     class ParallaxingBackground
     {
-        // The image representing the parallaxing background
-        Texture2D texture;
 
-        // An array of positions of the parallaxing background
-        Vector2[] positions;
+        Texture2D texture; // fona bilde
+        Vector2[] positions; // pozîciju masîvs
+        int speed; // kustîbas âtrums
 
-        // The speed which the background is moving
-        int speed;
-
+        //uzstâda sâkuma nosacîjumus pçc patodajâ vçrtîbâm
         public void Initialize(ContentManager content, String texturePath, int screenWidth, int speed)
         {
-            // Load the background texture we will be using
-            texture = content.Load<Texture2D>(texturePath);
-
-            // Set the speed of the background
-            this.speed = speed;
-
-            // If we divide the screen with the texture width then we can determine the number of tiles need.
-            // We add 1 to it so that we won't have a gap in the tiling
-            positions = new Vector2[screenWidth / texture.Width + 1];
-
-            // Set the initial positions of the parallaxing background
+            texture = content.Load<Texture2D>(texturePath); //ielâdç fona bildi
+            this.speed = speed; 
+            // izdala ekrâna platumu ar bildes platumu, lai zinâtu, cik bildes reizç attçlot
+            positions = new Vector2[screenWidth / texture.Width + 1]; //pieskaita +1, lai bildes pârklâtos bez caurumiem
+            
+            //uzstâda sâkuma pozîcijas
             for (int i = 0; i < positions.Length; i++)
             {
-                // We need the tiles to be side by side to create a tiling effect
-                positions[i] = new Vector2(i * texture.Width, 0);
+                positions[i] = new Vector2(i * texture.Width, 0);// bilde, liek vienu aiz otras
             }
         }
 
         public void Update()
         {
-            // Update the positions of the background
             for (int i = 0; i < positions.Length; i++)
             {
-                // Update the position of the screen by adding the speed
-                positions[i].X += speed;
-                // If the speed has the background moving to the left
-                if (speed <= 0)
+                positions[i].X += speed; //kustâs
+                if (speed <= 0) //ja âtrums negatîvs fons kustâs pa kreisi
                 {
-                    // Check the texture is out of view then put that texture at the end of the screen
-                    if (positions[i].X <= -texture.Width)
+                    if (positions[i].X <= -texture.Width) // ja bilde ir ârpus loga, tâ tiek pârlikta uz sâkumu
                     {
-                        positions[i].X = texture.Width * (positions.Length - 1);
+                        positions[i].X = texture.Width * (positions.Length - 1); 
                     }
                 }
-
-                // If the speed has the background moving to the right
-                else
+                else //ja âtrums nav negatîvs fons kustâs pa labi
                 {
-                    // Check if the texture is out of view then position it to the start of the screen
-                    if (positions[i].X >= texture.Width * (positions.Length - 1))
+                    if (positions[i].X >= texture.Width * (positions.Length - 1))  // ja bilde ir ârpus loga, tâ tiek pârlikta uz sâkumu
                     {
                         positions[i].X = -texture.Width;
                     }
@@ -70,6 +50,7 @@ namespace ThugLife
             }
         }
 
+        //zîmç
         public void Draw(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < positions.Length; i++)

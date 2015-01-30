@@ -1,66 +1,30 @@
-// Animation.cs
-//Using declarations
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace ThugLife
 {
-    /// <summary>
-    /// This is a game component that implements IUpdateable.
-    /// </summary>
     class Animation
     {
+        Texture2D spriteStrip; //animacijas strip bilde
+        float scale; // mçrogs
+        int elapsedTime; // laiks, kas pagâjis, kopð pçdçja update
+        int frameTime; // laiks, cik ilgi attçlo vienu frame pirms nâkoðâ
+        int frameCount; // animacijas frame skaits
+        int currentFrame; // pashreizejaa frame index
+        Color color; // frame krâsa
+        Rectangle sourceRect = new Rectangle(); // bildes laukums, kuru attçlo
+        Rectangle destinationRect = new Rectangle(); // laukums, kur attçlot bildi
+        public int FrameWidth; // frame platums
+        public int FrameHeight; // frame garums
+        public bool Active; // frame stâvoklis
+        public bool Looping; // nosaka, vai animâcija atkârtosies
+        public Vector2 Position; // pozîcija
 
-        // The image representing the collection of images used for animation
-        Texture2D spriteStrip;
-
-        // The scale used to display the sprite strip
-        float scale;
-
-        // The time since we last updated the frame
-        int elapsedTime;
-
-        // The time we display a frame until the next one
-        int frameTime;
-
-        // The number of frames that the animation contains
-        int frameCount;
-
-        // The index of the current frame we are displaying
-        int currentFrame;
-
-        // The color of the frame we will be displaying
-        Color color;
-
-        // The area of the image strip we want to display
-        Rectangle sourceRect = new Rectangle();
-
-        // The area where we want to display the image strip in the game
-        Rectangle destinationRect = new Rectangle();
-
-        // Width of a given frame
-        public int FrameWidth;
-
-        // Height of a given frame
-        public int FrameHeight;
-
-        // The state of the Animation
-        public bool Active;
-
-        // Determines if the animation will keep playing or deactivate after one run
-        public bool Looping;
-
-        // Width of a given frame
-        public Vector2 Position;
-
-        public void Initialize(Texture2D texture, Vector2 position,
-                                int frameWidth, int frameHeight, int frameCount,
-                                int frametime, Color color, float scale, bool looping)
+        public void Initialize(Texture2D texture, Vector2 position, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
-            // Keep a local copy of the values passed in
+            // lokâla kopija no padotajiem
             this.color = color;
             this.FrameWidth = frameWidth;
             this.FrameHeight = frameHeight;
@@ -72,58 +36,46 @@ namespace ThugLife
             Position = position;
             spriteStrip = texture;
 
-            // Set the time to zero
+            // uzstâda laiku 0
             elapsedTime = 0;
             currentFrame = 0;
 
-            // Set the Animation to active by default
-            Active = true;
+            Active = true; // sâkumâ pçc noklusçjuma animâcija ir aktîva
         }
 
         public void Update(GameTime gameTime)
         {
-            // Do not update the game if we are not active
+            // nav update, ja animacija ir neaktiva
             if (Active == false)
                 return;
 
-            // Update the elapsed time
+            // pagâjuðâ laika update
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            // If the elapsed time is larger than the frame time
-            // we need to switch frames
-            if (elapsedTime > frameTime)
+            if (elapsedTime > frameTime) // ja pagâjuðais laiks ir lielâks par 1 frame laiku
             {
-                // Move to the next frame
-                currentFrame++;
-
-                // If the currentFrame is equal to frameCount reset currentFrame to zero
-                if (currentFrame == frameCount)
+                currentFrame++; //nomaina frame un nâkoðo
+                if (currentFrame == frameCount)// ja paðreizçjais frame index ir vienâds pçdçjâ frame index
                 {
-                    currentFrame = 0;
-                    // If we are not looping deactivate the animation
-                    if (Looping == false)
-                        Active = false;
+                    currentFrame = 0; //uzliek atkal pirmo frame
+                    if (Looping == false) //ja loop ir false
+                        Active = false; //animâcija paliek neaktîva un neatkârtojas
                 }
-
-                // Reset the elapsed time to zero
-                elapsedTime = 0;
+                elapsedTime = 0; // uzstâda pagâjuðo laiku atkal uz 0
             }
 
-            // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);
 
-            // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2,
+            sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight); // paòem pareizo strip bildes gabalu
+            destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2, // uztaisa laukumu, kur ielikt bildes gabalu
             (int)Position.Y - (int)(FrameHeight * scale) / 2,
             (int)(FrameWidth * scale),
             (int)(FrameHeight * scale));
         }
 
-        // Draw the Animation Strip
+        //zîmç
         public void Draw(SpriteBatch spriteBatch)
         {
-            // Only draw the animation when we are active
-            if (Active)
+            if (Active) // tikai, tad, ja ir aktîva animâcija
             {
                 spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
             }

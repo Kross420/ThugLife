@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="44149a9ed292462e957471390a6b948a" Name="Diagram1">
+      <Diagram DiagramId="845c5f274f8b4e3392109bbaa02eabe1" Name="Diagram1">
         <EntityTypeShape EntityType="ThugLifeDBModel.Player" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ThugLifeDBModel.Score" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
       </Diagram>

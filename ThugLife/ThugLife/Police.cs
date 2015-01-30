@@ -5,99 +5,55 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ThugLife
 {
-    /// <summary>
-    /// This is a game component that implements IUpdateable.
-    /// </summary>
     class Police
     {
-        // Animation representing the enemy
-        public Animation PoliceAnimation;
+        public Animation PoliceAnimation;  // policijas maðînas animâcija
+        public Vector2 Position; // pozîcija
+        public bool Active; // stâvoklis
+        public int Health; // dzîvîbas
+        public int Damage; // cik dzîvîas atòem sadursmçs
+        public int Value; // puntku skaits, ko var iegût spçlçtâjs
+        public float MoveSpeed; //kustîbas âtrums
 
-        // The position of the enemy ship relative to the top left corner of thescreen
-        public Vector2 Position;
-
-        // The state of the Enemy Ship
-        public bool Active;
-
-        // The hit points of the enemy, if this goes to zero the enemy dies
-        public int Health;
-
-        // The amount of damage the enemy inflicts on the player ship
-        public int Damage;
-
-        // The amount of score the enemy will give to the player
-        public int Value;
-
-        // Get the width of the enemy ship
+        // iegûst animâcijas platumu
         public int Width
         {
             get { return PoliceAnimation.FrameWidth; }
         }
-
-        // Get the height of the enemy ship
+        // iegûst animâcijas garumu
         public int Height
         {
             get { return PoliceAnimation.FrameHeight; }
         }
 
-        // The speed at which the enemy moves
-        public float MoveSpeed;
-
-
+        //Uzstâda sâkuma nosacîjumus
         public void Initialize(Animation animation, Vector2 position)
         {
-            // Load the enemy ship texture
             PoliceAnimation = animation;
-
-            // Set the position of the enemy
             Position = position;
-
-            // We initialize the enemy to be active so it will be update in the game
             Active = true;
-
-
-            // Set the health of the enemy
             Health = 100;
-
-            // Set the amount of damage the enemy can do
             Damage = 1;
-
-            // Set how fast the enemy moves
             MoveSpeed = 3f;
-
-
-            // Set the score value of the enemy
             Value = 100;
-
         }
 
+        //atjauno animâcijas pozîciju
         public void Update(GameTime gameTime)
         {
-            // The enemy always moves to the left so decrement it's xposition
             Position.X += MoveSpeed;
-
-            // Update the position of the Animation
             PoliceAnimation.Position = Position;
-
-            // Update Animation
             PoliceAnimation.Update(gameTime);
-
-            // If the enemy is past the screen or its health reaches 0 then deactivateit
-            if (Position.X > 1024+Width || Health <= 0)
+            if (Position.X > 1024+Width || Health <= 0) //ja ir ârpus râmja vai hp ir 0
             {
-                // By setting the Active flag to false, the game will remove this objet fromthe
-                // active game list
-                Active = false;
+                Active = false; //paliek neaktîvs
             }
         }
 
+        //zîmç
         public void Draw(SpriteBatch spriteBatch)
         {
-            // Draw the animation
             PoliceAnimation.Draw(spriteBatch);
         }
-
-
-
     }
 }
